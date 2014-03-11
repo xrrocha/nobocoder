@@ -39,3 +39,4 @@ trait LuceneNGramSpellChecker extends NGramSpellChecker {
   def stringDistance: StringDistance
   def scoreSimilarity(s1: String, s2: String): Double = stringDistance.getDistance(s1, s2)
 }
+
