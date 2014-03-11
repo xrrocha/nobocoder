@@ -14,4 +14,3 @@ functional programming.
 
 The presentation starts with an imperative solution that is subsequently refactored -step by step- into an equivalent
 functional/oo version.
- 
