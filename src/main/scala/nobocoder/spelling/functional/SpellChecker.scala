@@ -11,18 +11,18 @@ trait SpellChecker {
       mapValues(_.get)
 }
 
-trait NGramSpellChecker extends  SpellChecker with NGramBuilder {
-  def ngram2Word: Map[String, Seq[String]]
-
+trait NGramSpellChecker extends  SpellChecker with NGramMapBuilder {
   def minSimilarity: Double
   def scoreSimilarity(s1: String, s2: String): Double
 
-  val words: Set[String] = ngram2Word.values.flatten.toSet
+  lazy val ngram2Word = buildNGramMap
+  lazy val words: Set[String] = ngram2Word.values.flatten.toSet
 
   def suggestionsFor(word: String): Option[Seq[String]] =
     if (words contains word) None
     else Some {
       ngrams(word).
+        filter(ngram2Word.contains).
         flatMap(ngram2Word).
         distinct.
         map { candidate =>
@@ -32,11 +32,5 @@ trait NGramSpellChecker extends  SpellChecker with NGramBuilder {
         sortBy(-_._2).
         map(_._1)
     }
-}
-
-import org.apache.lucene.search.spell.StringDistance
-trait LuceneNGramSpellChecker extends NGramSpellChecker {
-  def stringDistance: StringDistance
-  def scoreSimilarity(s1: String, s2: String): Double = stringDistance.getDistance(s1, s2)
 }
 

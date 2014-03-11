@@ -23,7 +23,7 @@ class NGramBuilderTest extends FunSuite {
 
 class WordListNGramMapBuilderTest extends FunSuite {
   val ngramMapBuilder = new WordListNGramMapBuilder {
-    val words = Seq("nobocoder", "is", "coders", "at", "work")
+    val wordList = Seq("nobocoder", "is", "coders", "at", "work")
   }
 
   test("Builds ngram map") {

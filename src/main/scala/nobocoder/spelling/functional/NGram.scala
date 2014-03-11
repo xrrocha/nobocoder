@@ -23,10 +23,10 @@ trait NGramMapBuilder extends NGramBuilder {
 }
 
 trait WordListNGramMapBuilder extends NGramMapBuilder {
-  def words: Iterable[String]
+  def wordList: Iterable[String]
 
   def buildNGramMap: NGramMap =
-    words.
+    wordList.
       flatMap { word =>
         ngrams(word).map(ngram => (ngram, word))
       }.
