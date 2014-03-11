@@ -11,3 +11,6 @@ This Scala project implements a simple spelling suggestion engine with three ver
 This material has been prepared to introduce Scala to the [North Boynton Coders meetup](http://www.meetup.com/nobocoders/).
 This group is familiar with mainstream object-oriented languages and also has a basic familiarity with Haskell and
 functional programming.
+
+The presentation starts with an imperative solution that is subsequently refactored -step by step- into an equivalent
+functional/oo version.
