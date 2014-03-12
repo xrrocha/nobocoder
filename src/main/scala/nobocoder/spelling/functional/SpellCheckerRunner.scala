@@ -13,7 +13,7 @@ class SimpleSpellChecker(
   def scoreSimilarity(s1: String, s2: String) = stringDistance.getDistance(s1, s2)
 }
 
-object SimpleSpellChecker extends App with Logging {
+object SpellCheckerRunner extends App with Logging {
   val spellChecker = new SimpleSpellChecker(
     wordList       = io.Source.fromFile("files/words.txt").getLines.toIterable,
     minSimilarity  = .845,
