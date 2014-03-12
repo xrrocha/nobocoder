@@ -1,6 +1,7 @@
 package nobocoder.spelling.functional
 
 import org.apache.lucene.search.spell.{JaroWinklerDistance, StringDistance}
+import com.typesafe.scalalogging.slf4j.Logging
 
 class SimpleSpellChecker(
     val wordList: Iterable[String],
@@ -12,7 +13,7 @@ class SimpleSpellChecker(
   def scoreSimilarity(s1: String, s2: String) = stringDistance.getDistance(s1, s2)
 }
 
-object SimpleSpellChecker extends App {
+object SimpleSpellChecker extends App with Logging {
   val spellChecker = new SimpleSpellChecker(
     wordList       = io.Source.fromFile("files/words.txt").getLines.toIterable,
     minSimilarity  = .845,
@@ -24,6 +25,7 @@ object SimpleSpellChecker extends App {
     }
   )
 
+  logger.debug(s"args: ${args.mkString(" ")}")
   spellChecker.suggestionsFor(args).
     foreach { case (word, suggestions) =>
       println(s"$word: ${suggestions.mkString(",")}")
