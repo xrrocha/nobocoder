@@ -103,6 +103,40 @@ Thus, for a 72k-word dictionary and a Levenshtein threshold of `0.725`, the foll
 
 ## N-Grams to the Rescue ##
 
+An inexpensive mechanism is needed to avoid performing costly comparisons most of
+which will yield scores below the minimum similarity threshold.
+
+As it turns out, string similarity is closely related to character commonality:
+the higher a similarity score is for a given pair of string the more characters
+they share in the same or very close positions.
+
+An [_n-gram_](http://en.wikipedia.org/wiki/N-gram) is a (generally small) substring
+of contiguous characters drawn from a larger string. The _n_ in n-gram corresponds
+to its length. Thus, a _bigram_ contains 2 characters, while a _trigram_ contains
+3.
+
+The following is the list of all bigrams and trigrams for the (cool!) word _nobocoder_:
+>
+|Bigrams|Trigrams|
+|:-----:|:------:|
+|no|nob|
+|ob|obo|
+|bo|boc|
+|oc|oco|
+|co|cod|
+|od|ode|
+|de|der|
+|er|
+
+It's not hard to see that _nobocoder_ and _novocoder_ share 7 of their 8 bigrams and
+6 of their 7 trigrams. N-Gram distance is, in fact, a similarity metric in its own right (albeit somewhat less effective for our purposes than, say, Levenshtein).
+
+For short strings such as dictionary words, restricting word pairs to those sharing
+at least _one_ bigram expunges a surprisingly high number of otherwise wasteful comparisons.
+
+
+
+
 
 
 
