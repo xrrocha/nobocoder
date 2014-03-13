@@ -173,7 +173,7 @@ bigram to the `Set` of words in which it occurs.
 Thus, for our above dictionary fragment, the bigram-to-wordset map would be:
 
 |Bigram|Word Set|
-|------|---------|
+|:----:|---------|
 |ac|academic, academy, accent, accept, accident, account, accountant, acid|
 |ad|academic, academy|
 |an|accountant|
@@ -200,7 +200,7 @@ Given this map, let's consider the typo _accet_. This typo has the following
 bigrams:
 
 |Typo|Bigrams|
-|----|-------|
+|----|:-----:|
 |accet|ac|
 ||cc|
 ||ce|
@@ -209,7 +209,7 @@ bigrams:
 Extracting these bigrams from out map we obtain:
 
 |Typo|Bigram|Related Words|
-|----|------|-----|
+|----|:----:|-----|
 |accet|ac|academic, academy, accent, accept, accident, account, accountant, acid|
 ||cc|accent, accept, accident, account, accountant|
 ||ce|accent, accept|
@@ -244,6 +244,27 @@ Levenshtein:
 
 With a minimum similarity of `0.75` only the words _accent_ and _accept_ would be
 returned as suggestions.
+
+The data structure needed for our purposes is a `Map` where the keys are bigrams (`String`) and the values are the list of words containing the bigram
+(`List[String]`). In Scala this may look like:
+
+```scala
+val nramg2words: Map[String, List[String]] = ... // Initialize map of ngram to word list here
+...
+def ngram(word: String, length: Int = 2): Seq[String] = ... // Extract n-grams from word for a given length
+...
+val levenshtein = new org.apache.lucene.search.spell.LevensteinDistance
+val minimumSimilarity = 0.75
+...
+val typo = "novocoder"
+val suggestions =
+  ngram(typo).
+  flatMap(ngram2words).
+  distinct.
+  map(word => (word, levenshtein.getDistance(word, typo)))
+  filter(_._2 >= minimumSimilarity).
+  sortBy(-_._2)
+```
 
 
 
