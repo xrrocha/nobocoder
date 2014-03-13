@@ -137,7 +137,7 @@ at least _one_ bigram expunges a surprisingly high number of otherwise wasteful 
 Equipped with this knowledge we can now identify the data structures needed by our
 basic algorithm.
 
-## Data Structures for Spelling Suggestion ##
+## Spelling Suggestion Algorithm ##
 
 Spelling suggestion requires two operations:
 
@@ -199,47 +199,48 @@ Thus, for our above dictionary fragment, the bigram-to-wordset map would be:
 Given this map, let's consider the typo _accet_. This typo has the following
 bigrams:
 
-|Bigrams|
-|-------|
-|ac|
-|cc|
-|ce|
-|et|
+|Typo|Bigrams|
+|----|-------|
+|accet|ac|
+||cc|
+||ce|
+||et|
 
-Combining these bigrams with out map we obtain:
+Extracting these bigrams from out map we obtain:
 
-|Bigram|Words|
-|------|-----|
-|ac|academic, academy, accent, accept, accident, account, accountant, acid|
-|cc|accent, accept, accident, account, accountant|
-|ce|accent, accept|
-|et|_no matching words_|
+|Typo|Bigram|Related Words|
+|----|------|-----|
+|accet|ac|academic, academy, accent, accept, accident, account, accountant, acid|
+||cc|accent, accept, accident, account, accountant|
+||ce|accent, accept|
+||et|_no matching words_|
 
-The union set of all these words is:
+The union set of these related words is:
 
-|Distinct Words|
-|--------------|
-|academic|                                    
-|academy|                              
-|accent|                        
-|accept|               
-|accident|     
-|account|
-|accountant|                                                                                                                                                                  
-|acid| 
+|Typo|Related Words|
+|----|-------------|
+|accet|academic|                                    
+||academy|                              
+||accent|                        
+||accept|               
+||accident|     
+||account|
+||accountant|                                                                                                                                                                  
+||acid| 
 
-We can now compare our typo _accet_ with these words using Levenshtein:
+We can now compare our typo _accet_ with each of these related words using
+Levenshtein:
 
-|Word|Score|
-|----|-----|
-|accent|0.8333|
-|accept|0.8333|
-|accident|0.6250|
-|account|0.5714|
-|academy|0.4286|
-|accountant|0.4000|
-|acid|0.4000|
-|academic|0.3750|
+|Typo|Word|Score|
+|----|----|-----|
+|accet|accent|0.8333|
+||accept|0.8333|
+||accident|0.6250|
+||account|0.5714|
+||academy|0.4286|
+||accountant|0.4000|
+||acid|0.4000|
+||academic|0.3750|
 
 With a minimum similarity of `0.75` only the words _accent_ and _accept_ would be
 returned as suggestions.
