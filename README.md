@@ -145,6 +145,7 @@ Spelling suggestion requires two operations:
 - For a given unknown word, determining what known words are sufficiently
   similar to it
 
+### Word Membership ###
 A `Set` is the appropriate data structure to efficiently ascertain word
 membership. In Scala this would look like:
 
@@ -163,6 +164,8 @@ def isKnown(word: String) = dictionary contains word
 ...
 println(if (isKnown(term)) "Sure enough" else s"Whaddaya mean $term?")
 ```
+
+### Finding Similar Words ###
 
 Finding similar words is a bit more involved: we need a `Map` connecting each
 bigram to the `Set` of words in which it occurs. When a un unknown word is handed
