@@ -16,8 +16,8 @@ val metrics = Seq(new LevensteinDistance, new JaroWinklerDistance)
 
 val similarities =
   dictionary.map { word =>
-    (word, metrics.map(_.getDistance(typo, word)))
-  }.
+      (word, metrics.map(_.getDistance(typo, word)))
+    }.
     sortBy(-_._2.product)
 
 val header =
@@ -29,7 +29,7 @@ val header =
 val body =
   similarities.map { case(word, scores) =>
     s"|$word|${scores.map(score => f"$score%.4f").mkString("|")}|"
-  }.
+   }.
     mkString("\n")
 
 
