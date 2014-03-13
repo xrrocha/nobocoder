@@ -84,11 +84,11 @@ anything below `0.7` for the Levenshtein metric is probably not similar enough.
 
 ## Comparison Explosion ##
 
-In order to be axhaustive, a naïve spelling suggestion implementation would compare
+In order to be exhaustive, a naïve spelling suggestion implementation would compare
 each unknown word with _all_ words in the dictionary collecting only those whose
 similarity score is above a configured threshold.
 
-A useful dictionary will contain several tens of thousand words or more. Comparing each
+A useful dictionary will contain several tens of thousand words. Comparing each
 unknown term with so many words is clearly unacceptable, especially given how costly
 a similarity comparison is as opposed to simple string equality
 
