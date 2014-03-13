@@ -48,7 +48,7 @@ For our implementation we'll use Apache Lucene's
 ## Similarity Examples ##
 
 Consider the following dictionary fragment:
->
+
 |Word|
 |----|
 |academic|
@@ -62,7 +62,7 @@ Consider the following dictionary fragment:
 |count|
 
 The following table shows the similarity scores for the above dictionary words and the misspelled word _academmic_:
->
+
 |Word|Levenshtein|JaroWinkler|
 |----|----------:|----------:|
 |academic|0.8889|0.9852|
@@ -94,7 +94,7 @@ a similarity comparison is as opposed to simple string equality
 
 Thus, for a 72k-word dictionary and a Levenshtein threshold of `0.725`, the following
 3 typos would require 216,000 similarity comparisons to come up with the few suggestions shown below:
->
+
 |Typo|Suggestions|
 |----|-----------|
 |acident|accident, accidents, acridest, incident, occident|
@@ -116,7 +116,7 @@ to its length. Thus, a _bigram_ contains 2 characters, while a _trigram_ contain
 3.
 
 The following is the list of all bigrams and trigrams for the (cool!) word _nobocoder_:
->
+
 |Bigrams|Trigrams|
 |:-----:|:------:|
 |no|nob|
@@ -168,11 +168,65 @@ println(if (isKnown(term)) "Sure enough" else s"Whaddaya mean $term?")
 ### Finding Similar Words ###
 
 Finding similar words is a bit more involved: we need a `Map` connecting each
-bigram to the `Set` of words in which it occurs. When a un unknown word is handed
-to us we use this map to locate the words associated with the unkown word's bigrams.
+bigram to the `Set` of words in which it occurs.
 
+Thus, for our above dictionary fragment, the bigram-to-wordset map would be:
 
+|Bigram|Word Set|
+|------|---------|
+|ac|academic, academy, accent, accept, accident, account, accountant, acid|
+|ad|academic, academy|
+|an|accountant|
+|ca|academic, academy|
+|cc|accent, accept, accident, account, accountant|
+|ce|accent, accept|
+|ci|accident, acid|
+|co|account, accountant, count|
+|de|academic, academy, accident|
+|em|academic, academy|
+|en|accent, accident|
+|ep|accept|
+|ic|academic|
+|id|accident, acid|
+|mi|academic|
+|my|academy|
+|nt|accent, accident, account, accountant, count|
+|ou|account, accountant, count|
+|pt|accept|
+|ta|accountant|
+|un|account, accountant, count|
 
+Given this map, let's consider the typo _accet_. This typo has the following
+bigrams:
+
+|Bigrams|
+|-------|
+|ac|
+|cc|
+|ce|
+|et|
+
+Combining these bigrams with out map we obtain:
+
+|Bigram|Words|
+|------|-----|
+|ac|academic, academy, accent, accept, accident, account, accountant, acid|
+|cc|accent, accept, accident, account, accountant|
+|ce|accent, accept|
+|et|_no matching words_|
+
+The union set of all these words is:
+
+|Distinct Words|
+|--------------|
+|academic|                                    
+|academy|                              
+|accent|                        
+|accept|               
+|accident|     
+|account|
+|accountant|                                                                                                                                                                  
+|acid| 
 
 
 
