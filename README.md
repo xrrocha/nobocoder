@@ -228,6 +228,22 @@ The union set of all these words is:
 |accountant|                                                                                                                                                                  
 |acid| 
 
+We can now compare our typo _accet_ with these words using Levenshtein:
+
+|Word|Score|
+|----|-----|
+|accent|0.8333|
+|accept|0.8333|
+|accident|0.6250|
+|account|0.5714|
+|academy|0.4286|
+|accountant|0.4000|
+|acid|0.4000|
+|academic|0.3750|
+
+With a minimum similarity of `0.75` only the words _accent_ and _accept_ would be
+returned as suggestions.
+
 
 
 
