@@ -258,13 +258,18 @@ val minimumSimilarity = 0.75
 ...
 val typo = "novocoder"
 val suggestions =
-  ngram(typo).
-  flatMap(ngram2words).
-  distinct.
-  map(word => (word, levenshtein.getDistance(word, typo)))
-  filter(_._2 >= minimumSimilarity).
-  sortBy(-_._2)
+  ngram(typo). // extract bigrams from typo
+  flatMap(ngram2words). // replace each bigram by its associated words
+  distinct. // remove duplicate words
+  map(word => (word, levenshtein.getDistance(word, typo))) // compare each word with typo
+  filter(_._2 >= minimumSimilarity). // remove words not sufficiently similar
+  sortBy(-_._2) // sort in descending similarity order (more similar words first)
 ```
+
+Don't worry about the seemingly cryptic syntax; as we advance in our presentation
+things will fall neatly into place.
+
+For now, note how compact this algorithm looks thanks to Scala's functional collections!
 
 
 
