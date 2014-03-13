@@ -137,7 +137,36 @@ at least _one_ bigram expunges a surprisingly high number of otherwise wasteful 
 Equipped with this knowledge we can now identify the data structures needed by our
 basic algorithm.
 
-##  ##
+## Data Structures for Spelling Suggestion ##
+
+Spelling suggestion requires two operations:
+
+- Determining whether a given word occurs in the dictionary or not
+- For a given unknown word, determining what known words are sufficiently
+  similar to it
+
+A `Set` is the appropriate data structure to efficiently ascertain word
+membership. In Scala this would look like:
+
+```scala
+val dictionary: Set[String] = ... // Initialize dictionary here 
+def isKnown(word: String): Boolean = dictionary.contains(word)
+...
+if (isKnown(term)) println("Sure enough") else println(s"Whaddaya mean $term?")
+```
+
+Disgression: if only to illustrate a somewhat more idiomatic use of Scala, the above
+is equivalent to:
+```scala
+val dictionary = ... // Initialize dictionary to a Set-returning expression
+def isKnown(word: String) = dictionary contains word
+...
+println(if (isKnown(term)) "Sure enough" else s"Whaddaya mean $term?")
+```
+
+Finding similar words is a bit more involved: we need a `Map` connecting each
+bigram to the `Set` of words in which it occurs. When a un unknown word is handed
+to us we use this map to locate the words associated with the unkown word's bigrams.
 
 
 
