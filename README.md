@@ -246,10 +246,10 @@ With a minimum similarity of `0.75` only the words _accent_ and _accept_ would b
 returned as suggestions.
 
 The data structure needed for our purposes is a `Map` where the keys are bigrams (`String`) and the values are the list of words containing the bigram
-(`List[String]`). In Scala this may look like:
+(`Seq[String]`). In Scala this may look like:
 
 ```scala
-val nramg2words: Map[String, List[String]] = ... // Initialize map of ngram to word list here
+val nramg2words: Map[String, Seq[String]] = ... // Initialize map of ngram to word list here
 ...
 def ngram(word: String, length: Int = 2): Seq[String] = ... // Extract n-grams from word for a given length
 ...
