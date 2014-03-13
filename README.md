@@ -108,7 +108,7 @@ which will yield scores below the minimum similarity threshold.
 
 As it turns out, string similarity is closely related to character commonality:
 the higher a similarity score is for a given pair of string the more characters
-they share in the same or very close positions.
+they share at the same or very close positions.
 
 An [_n-gram_](http://en.wikipedia.org/wiki/N-gram) is a (generally small) substring
 of contiguous characters drawn from a larger string. The _n_ in n-gram corresponds
@@ -133,6 +133,11 @@ It's not hard to see that _nobocoder_ and _novocoder_ share 7 of their 8 bigrams
 
 For short strings such as dictionary words, restricting word pairs to those sharing
 at least _one_ bigram expunges a surprisingly high number of otherwise wasteful comparisons.
+
+Equipped with this knowledge we can now identify the data structures needed by our
+basic algorithm.
+
+##  ##
 
 
 
