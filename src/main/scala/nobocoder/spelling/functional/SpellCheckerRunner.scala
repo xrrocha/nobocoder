@@ -1,6 +1,6 @@
 package nobocoder.spelling.functional
 
-import org.apache.lucene.search.spell.{JaroWinklerDistance, StringDistance}
+import org.apache.lucene.search.spell.{JaroWinklerDistance, LevensteinDistance, StringDistance}
 import com.typesafe.scalalogging.slf4j.Logging
 
 class SimpleSpellChecker(
@@ -16,11 +16,11 @@ class SimpleSpellChecker(
 object SpellCheckerRunner extends App with Logging {
   val spellChecker = new SimpleSpellChecker(
     wordList       = io.Source.fromFile("files/words.txt").getLines.toIterable,
-    minSimilarity  = .845,
+    minSimilarity  = .725,
     ngramLength    = 2,
     stringDistance = {
-      val distance = new JaroWinklerDistance
-      distance.setThreshold(-1)
+      val distance = new LevensteinDistance
+      //distance.setThreshold(-1)
       distance
     }
   )
