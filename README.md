@@ -257,13 +257,14 @@ val levenshtein = new org.apache.lucene.search.spell.LevensteinDistance
 val minimumSimilarity = 0.75
 ...
 val typo = "novocoder"
-val suggestions =
+val suggestions: Seq[String] =
   ngram(typo). // extract bigrams from typo
   flatMap(ngram2words). // replace each bigram by its associated words
   distinct. // remove duplicate words
   map(word => (word, levenshtein.getDistance(word, typo))) // compare each word with typo
   filter(_._2 >= minimumSimilarity). // remove words not sufficiently similar
-  sortBy(-_._2) // sort in descending similarity order (more similar words first)
+  sortBy(-_._2). // sort in descending similarity order (more similar words first)
+  map(_._1) // extract only the word, leaving out the similarity score
 ```
 
 Don't worry about the seemingly cryptic syntax; as we advance in our presentation
