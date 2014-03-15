@@ -150,19 +150,11 @@ A `Set` is the appropriate data structure to efficiently ascertain word
 membership. In Scala this would look like:
 
 ```scala
-val dictionary: Set[String] = ... // Initialize dictionary here 
-def isKnown(word: String): Boolean = dictionary.contains(word)
+val dictionary = Set("academic", "academy", "accent", "accept", "accident", "account", "accountant", "acid", "count")
 ...
-if (isKnown(term)) println("Sure enough") else println(s"Whaddaya mean $term?")
-```
-
-Disgression: if only to illustrate a somewhat more idiomatic use of Scala, the above
-is equivalent to:
-```scala
-val dictionary = ... // Initialize dictionary to a Set-returning expression
-def isKnown(word: String) = dictionary contains word
+val someWord = "..."
 ...
-println(if (isKnown(term)) "Sure enough" else s"Whaddaya mean $term?")
+println(if (dictionary contains someWord) "Sure enough" else s"Whaddaya mean $someWord?") 
 ```
 
 ### Finding Similar Words ###
@@ -206,7 +198,7 @@ bigrams:
 ||ce|
 ||et|
 
-Extracting these bigrams from out map we obtain:
+Extracting these bigrams from our map we obtain:
 
 |Typo|Bigram|Related Words|
 |----|:----:|-----|
@@ -219,14 +211,13 @@ The union set of these related words is:
 
 |Typo|Related Words|
 |----|-------------|
-|accet|academic|                                    
-||academy|                              
-||accent|                        
-||accept|               
+|accet|academic|
+||academy|
+||accent|
+||accept|
 ||accident|     
 ||account|
-||accountant|                                                                                                                                                                  
-||acid| 
+||accountant|                                                                                                                                                                  ||acid|
 
 We can now compare our typo _accet_ with each of these related words using
 Levenshtein:
@@ -249,20 +240,21 @@ The data structure needed for our purposes is a `Map` where the keys are bigrams
 (`Seq[String]`). In Scala this may look like:
 
 ```scala
-val nramg2words: Map[String, Seq[String]] = ... // Initialize map of ngram to word list here
+val ngram2words: Map[String, Seq[String]] = ... // Initialize map of ngram to word list here
 ...
 def ngram(word: String, length: Int = 2): Seq[String] = ... // Extract n-grams from word for a given length
 ...
 val levenshtein = new org.apache.lucene.search.spell.LevensteinDistance
-val minimumSimilarity = 0.75
+val minSimilarity = 0.75
 ...
 val typo = "novocoder"
+...
 val suggestions: Seq[String] =
   ngram(typo). // extract bigrams from typo
   flatMap(ngram2words). // replace each bigram by its associated words
   distinct. // remove duplicate words
   map(word => (word, levenshtein.getDistance(word, typo))) // compare each word with typo
-  filter(_._2 >= minimumSimilarity). // remove words not sufficiently similar
+  filter(_._2 >= minSimilarity). // remove words not sufficiently similar
   sortBy(-_._2). // sort in descending similarity order (more similar words first)
   map(_._1) // extract only the word, leaving out the similarity score
 ```
@@ -272,6 +264,118 @@ things will fall neatly into place.
 
 For now, note how compact this algorithm looks thanks to Scala's functional collections!
 
+## Scala as a Scripting Language ##
 
+Despite being a strongly-typed language Scala has the refreshing feel of dynamic languages like Ruby and Python. Type annotations, in particular, are most often optional due to Scala's
+[_type inference_](http://en.wikipedia.org/wiki/Type_inference).
+
+Scala can also be used as a scripting language: free-form scripts don't need to define
+enclosing classes and can be run without a compilation step.
+
+For this Scala has an interactive mode called the [_REPL_](http://en.wikipedia.org/wiki/Read%E2%80%93eval%E2%80%93print_loop)
+(read-eval-print loop,) a powerful concept pioneered by Lisp and now quite common among
+scripting and functional languages. REPL's foster a development style dubbed
+[_exploratory programming_](http://en.wikipedia.org/wiki/Exploratory_programming)
+which fits functional programming especially well.
+
+To illustrate Scala's feel as a scripting language let's write a quick'n'dirty
+implementation of the naïve approach to spelling suggestion. For this, we'll asume we have
+a disk file containing the dictionary, one word per line.
+
+```scala
+// Load dictionary from file
+val dictionary = io.Source.fromFile("files/words.txt").getLines.toSet
+
+// Build the similarity scorer
+val minSimilarity = 0.75
+val levenshtein = new org.apache.lucene.search.spell.LevensteinDistance
+
+// Set the terms being examined
+val terms = Seq("good", "word", "here", "badd", "wurd", "herre")
+
+terms foreach { term =>
+  if (!(dictionary contains term))
+    dictionary foreach { knownWord =>
+      if (levenshtein.getDistance(term, knownWord) >= minSimilarity)
+        println(s"$term: did you mean $knownWord?")
+    }
+}
+```
+
+When run, the above script will output:
+
+>
+badd: did you mean bald?  
+badd: did you mean band?  
+badd: did you mean bade?  
+badd: did you mean bad?  
+badd: did you mean bard?  
+badd: did you mean add?  
+badd: did you mean baud?  
+wurd: did you mean kurd?  
+wurd: did you mean curd?  
+wurd: did you mean ward?  
+wurd: did you mean turd?  
+wurd: did you mean word?  
+herre: did you mean here?  
+
+Let's dissect this script.
+
+Populating the dictionary from disk to an efficient (hash) set is refreshingly simple!
+
+```scala
+val dictionary = io.Source.fromFile("files/words.txt").getLines.toSet
+```
+
+Scala provides the `io.Source` class to perform read operations on a variety of input
+sources. Instead of using the qualified class name we can import it as in:
+
+```scala
+import io.Source
+val dictionary = Source.fromFile("files/words.txt").getLines.toSet
+```
+
+The `fromFile` function opens a file for reading and returns an instance of the `Source` 
+class. This class has a `getLines` method yielding a string iterator to read each
+line in the file. `Iterator`, in turn, provides a `toSet` method that builds a `Set`
+suitable for quick membership testing. Cool!
+
+Next, we build a similarity scorer using Lucene's implementation of the Levenshtein
+(or, as they prefer to write it, _Levenstein_) algorithm:
+
+```scala
+// Build the similarity scorer
+import org.apache.lucene.search.spell._
+
+val minSimilarity = 0.75
+val levenshtein = new LevensteinDistance
+```
+
+`LevensteinDistance` provides a `getDistance` methods that computes the similarity between
+2 strings:
+
+```scala
+levenshtein.getDistance("nobocder", "novocoder") // 0.8888889
+```
+
+We then populate a list of test terms to exercise our suggestion approach:
+
+```scala
+val terms = Seq("good", "word", "here", "badd", "wurd", "herre")
+```
+
+We're now ready to visit each term and test if it exists in the dictionary;
+if it doesn't we traverse the dictionary comparing each word and selecting it
+if similar to the term:
+
+```scala
+terms foreach { term =>
+  if (!(dictionary contains term))
+    dictionary foreach { knownWord =>
+      if (levenshtein.getDistance(term, knownWord) >= minSimilarity)
+        println(s"$term: did you mean $knownWord?")
+    }
+}
+```
 
 
