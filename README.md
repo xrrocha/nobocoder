@@ -328,7 +328,7 @@ val dictionary = io.Source.fromFile("files/words.txt").getLines.toSet
 ```
 
 Scala provides the `io.Source` class to perform read operations on a variety of input
-sources. Instead of using the qualified class name we can import it as in:
+sources. Instead of using the qualified class name we could import it as in:
 
 ```scala
 import io.Source
@@ -341,7 +341,7 @@ line in the file. `Iterator`, in turn, provides a `toSet` method that builds a `
 suitable for quick membership testing. Cool!
 
 Next, we build a similarity scorer using Lucene's implementation of the Levenshtein
-(or, as they prefer to write it, _Levenstein_) algorithm:
+(or, as they prefer to write it, _levenstein_) algorithm:
 
 ```scala
 // Build the similarity scorer
@@ -351,7 +351,7 @@ val minSimilarity = 0.75
 val levenshtein = new LevensteinDistance
 ```
 
-`LevensteinDistance` provides a `getDistance` methods that computes the similarity between
+`LevensteinDistance` provides a `getDistance` method that computes the similarity between
 2 strings:
 
 ```scala
@@ -377,5 +377,19 @@ terms foreach { term =>
     }
 }
 ```
+
+Note how instead of saying _`foreach term in terms { ... }`_ in Scala we say
+`terms foreach { ... }`. This is so because `foreach` is a _method_ defined
+on collections that takes a block of code as argument. Thus, if we wanted to
+print all terms we'd say:
+
+```scala
+terms.foreach(println)
+```
+
+Hmm... this code reveals the process but not so much the _intention_.
+
+We want to filter out the terms occurring in the dictionary and then, further, we want to
+filter out the dictionary words that are not sufficiently similar to each unkown term.
 
 
