@@ -378,18 +378,15 @@ terms foreach { term =>
 }
 ```
 
-Note how instead of saying _`foreach term in terms { ... }`_ in Scala we say
+>
+Note: instead of saying _`foreach term in terms { ... }`_ in Scala we say
 `terms foreach { ... }`. This is so because `foreach` is a _method_ defined
 on collections that takes a block of code as argument. Thus, if we wanted to
-print all terms we'd say:
+print all terms we'd say `terms.foreach(println)`.
 
-```scala
-terms.foreach(println)
-```
-
-Hmm... this code reveals the process but not so much the _intention_.
-
-We want to filter out the terms occurring in the dictionary and then, further, we want to
-filter out the dictionary words that are not sufficiently similar to each unkown term.
+In regard to collecting words similar to unknown terms, the above traversal code
+reveals the _process_ but not so much the _intention_: we want to filter out the terms
+occurring in the dictionary and then, further, we want to filter out the dictionary
+words that are not sufficiently similar to each unkown term.
 
 
