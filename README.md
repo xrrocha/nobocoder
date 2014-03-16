@@ -693,21 +693,29 @@ Scala classes correspond closely to the notion of class in most object-oriented 
 a class groups together data fields and functions/methods. Like in Java,
 a class can extend at most one other class.
 
-![](img/phone.png)
+Class inheritance, however, is far less common in Scala than in other object-oriented
+languages; in most cases classes extend traits.
 
-A Scala _trait_ could be compared to a Java interface but it's a much more capable construct.
-Traits can have fields and method bodies as well as abstract members. Unlike a class,
-however, a trait cannot be directly instantiated. Traits exist solely to be extended by
-other traits, classes or objects.
+A Scala _trait_ could be compared to a Java interface but it's a much more capable construct. Traits can have fields and method bodies as well as abstract members.
+Unlike a class, however, a trait cannot be directly instantiated: traits exist solely
+to be extended by other traits, classes or objects.
 
-While a Scala class can extend at most one other class, it can (and frequently does) extend
+While a Scala class can extend at most one other class, it can (and often does) extend
 multiple traits. Because traits can carry method and field implementations some people see
-this as multiple inheritance but that would be somewhat mistaken. Traits are probably closer
-to Ruby or Python [mixins](http://en.wikipedia.org/wiki/Mixin): they're meant for
+this as multiple inheritance but that would be somewhat mistaken. Traits are probably
+closer to Ruby or Python [mixins](http://en.wikipedia.org/wiki/Mixin): they're meant for
 _composition_ rather than inheritance.
 
 In addition to classes and traits, Scala also features _objects_: stand-alone instances
 possibly extending a class and/or several traits.
+
+When an object has the same name as a class or trait it's dubbed their _companion object_.
+A companion object doesn't have to extend its associated class or trait (in practice it
+normally doesn't.) Companion objects, however, frequently provide functions similar to
+what Java calls static methods.
+
+### Classes, Traits and Objects: an Example ###
+
 
 
 
