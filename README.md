@@ -745,6 +745,23 @@ newline.)
 `Source.fromURL(url)` opens the given URL for reading. The trailing `mkString` method
 reads the entire URL contents into a string.
 
+If we run our application with:
+
+```bash
+scala URLFetcher http://localhost
+```
+
+We'd see something like:
+
+```
+<html>
+<head><title>It works!</title></head>
+<body>
+  <h1>It works!</h1>
+</body>
+</html>
+```
+
 
 
 
