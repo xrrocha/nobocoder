@@ -198,7 +198,7 @@ bigrams:
 ||ce|
 ||et|
 
-Extracting these bigrams from our map we obtain:
+Extracting the words associated with these bigrams from our map we obtain:
 
 |Typo|Bigram|Related Words|
 |----|:----:|-----|
@@ -237,7 +237,9 @@ With a minimum similarity of `0.75` only the words _accent_ and _accept_ would b
 returned as suggestions.
 
 The data structure needed for our purposes is a `Map` where the keys are bigrams (`String`) and the values are the list of words containing the bigram
-(`Seq[String]`). In Scala this may look like:
+(`Seq[String]`).
+
+With this data we can now sketch our algorithm in Scala as follows:
 
 ```scala
 val ngram2words: Map[String, Seq[String]] = ... // Initialize map of ngram to word list here
@@ -262,14 +264,15 @@ val suggestions: Seq[String] =
 Don't worry about the seemingly cryptic syntax; as we advance in our presentation
 things will fall neatly into place.
 
-For now, note how compact this algorithm looks thanks to Scala's functional collections!
+For now, note how compact the suggestion compilation looks thanks to Scala's functional
+collections!
 
 ## Scala as a Scripting Language ##
 
 Despite being a strongly-typed language Scala has the refreshing feel of dynamic languages like Ruby and Python. Type annotations, in particular, are most often optional due to Scala's
 [_type inference_](http://en.wikipedia.org/wiki/Type_inference).
 
-Scala can also be used as a scripting language: free-form scripts don't need to define
+Scala can also be used as a scripting language: free-form scripts don't need to reside in
 enclosing classes and can be run without a compilation step.
 
 For this Scala has an interactive mode called the [_REPL_](http://en.wikipedia.org/wiki/Read%E2%80%93eval%E2%80%93print_loop)
@@ -324,21 +327,15 @@ Let's dissect this script.
 Populating the dictionary from disk to an efficient (hash) set is refreshingly simple!
 
 ```scala
-val dictionary = io.Source.fromFile("files/words.txt").getLines.toSet
-```
-
-Scala provides the `io.Source` class to perform read operations on a variety of input
-sources. Instead of using the qualified class name we could import it as in:
-
-```scala
 import io.Source
 val dictionary = Source.fromFile("files/words.txt").getLines.toSet
 ```
 
-The `fromFile` function opens a file for reading and returns an instance of the `Source` 
-class. This class has a `getLines` method yielding a string iterator to read each
-line in the file. `Iterator`, in turn, provides a `toSet` method that builds a `Set`
-suitable for quick membership testing. Cool!
+Scala provides the `io.Source` class to perform read operations on a variety of input
+sources. The `fromFile` function opens a file for reading and returns an instance of
+`Source`. This class has a `getLines` method yielding a string iterator to
+read each line in the file. `Iterator`, in turn, provides a `toSet` method that builds
+a `Set  suitable for quick membership testing. Cool
 
 Next, we build a similarity scorer using Lucene's implementation of the Levenshtein
 (or, as they prefer to write it, _levenstein_) algorithm:
@@ -433,7 +430,7 @@ in the output collection; otherwise, it is omitted.
 
 Blocks of code passed as arguments are referred to as [_lambdas_](http://en.wikipedia.org/wiki/Anonymous_function). This construction is very familiar to
 Rubyists and Pythonistas and has found its way into strongly typed languages such as C#,
-C++ and Java.
+C++ and Java. It's been present forever in functional languages such as Haskell and Lisp.
 
 In order to refer to the current element inside our lambda we start the code block with
 a variable name followed by a fat arrow, followed by the actual predicate:
@@ -546,7 +543,7 @@ Here, for each term not in our dictionary, we identify what dictionary words are
 by the brute-force method of comparing the unknown term with every word in the dictionary (yes, yes, we'll improve upon this later.) We then complain if there are no similar words
 or show a list of suggestions otherwise.
 
-This snippet still has something smelly about it. For one it incurs in the sin of consuming
+This snippet still has something smelly about it: it incurs in the sin of consuming
 the data in the same context in which it is produced. This practice hinders reuse and makes
 code difficult to understand and modify.
 
@@ -589,10 +586,10 @@ the most similar ones are presented first:
 ```scala
 val similars = dictionary.
   toSeq. // Convert dictionary `Set` to `Seq` so as to enable sorting
-  map(word => (word, levenshtein.getDistance(term, word))). // Map each word to the tuple (word, similarity)
-  filter(_._2 >= minSimilarity). // Equivalent to: filter{ case(term, similarity) => similarity >= minSimilarity }
-  sortBy(-_._2). // Equivalent to: sortBy{ case(term, similarity) => -1 * similarity }
-  map(_._1) // Equivalent to: map{ case(term, similarity) => term }
+  map(word => (word, levenshtein.getDistance(term, word))). // Build tuple (word, similarity)
+  filter(_._2 >= minSimilarity). // Remove not similar words
+  sortBy(-_._2). // Order by second tuple element (similarity)
+  map(_._1) // Produce only first tuple element (word)
 ```
 
 Lastly, let's modify the printing of spelling suggestions to format the ordered set of
@@ -616,7 +613,7 @@ literaryNumbers.mkString("{", ", ", "}") // yields: {22, 42, 69}
 ```
 
 Uff, a rather long journey to make our humble script more idiomatic. Let's take a look at
-our revised version:
+our final, revised version:
 
 ```scala
 val dictionary = io.Source.fromFile("files/words.txt").getLines.toSet
