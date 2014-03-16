@@ -495,8 +495,8 @@ sort -u -o dictionary.txt  # Order by word -suppressing duplicates- onto diction
 
 Wow, we can build a dictionary with four simple commands in a single pipeline!
 
-This style of collection manipulation rings a bell... yes: our early formulation of the
-spelling suggestion algorithm!
+This style of successive collection transformation rings a bell...
+yes: our early formulation of the spelling suggestion algorithm!
 
 ```scala
 val suggestions =
@@ -528,7 +528,7 @@ Here, for each term not in our dictionary, we identify what dictionary words are
 by the brute-force method of comparing the unknown term with every word in the dictionary (yes, we'll improve upon this later.) We then complain if there are no similar words
 or show a list of suggestions otherwise.
 
-This snippet still has something smelly about it: it incurs in the sin of consuming
+This snippet has something smelly about it: it incurs in the sin of consuming
 the data in the same context in which it is produced. This practice hinders reuse and makes
 code difficult to understand and modify.
 
