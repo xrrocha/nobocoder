@@ -693,7 +693,7 @@ Scala classes correspond closely to the notion of class in most object-oriented 
 a class groups together data fields and functions/methods. Like in Java,
 a class can extend at most one other class.
 
-![](https://raw.github.com/xrrocha/nobocoder/img/phone.jpg)
+![](img/phone.jpg)
 
 A Scala _trait_ could be compared to a Java interface but it's a much more capable construct.
 Traits can have fields and method bodies as well as abstract members. Unlike a class,
