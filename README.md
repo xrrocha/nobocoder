@@ -324,6 +324,8 @@ herre: did you mean here?
 
 Let's dissect this script.
 
+### Loading the Dictionary from Disk ###
+
 Loading the dictionary from disk into a set is pleasantly simple:
 
 ```scala
@@ -336,6 +338,8 @@ sources. The `fromFile` function opens a file for reading and returns an instanc
 `Source`. This class has a `getLines` method yielding a string iterator to
 read each line in the file. `Iterator`, in turn, provides a `toSet` method that builds
 a `Set`  suitable for efficient membership testing. Cool!
+
+### Creating the Similarity Scorer ###
 
 Next, we build a similarity scorer using Lucene's implementation of the Levenshtein
 (or, as they prefer to spell it, _levenstein_) algorithm:
@@ -354,6 +358,7 @@ val levenshtein = new LevensteinDistance
 ```scala
 levenshtein.getDistance("nobocder", "novocoder") // yields: 0.8888889
 ```
+### Feeding (dummy) Test Data ###
 
 We then populate a list of test terms to exercise our suggestion approach:
 
@@ -361,6 +366,11 @@ We then populate a list of test terms to exercise our suggestion approach:
 val terms = Seq("good", "word", "here", "badd", "wurd", "herre", "notaword")
 ```
 
+We won't be getting any output for the first 3 "good" words. We should get suggestions
+for the next 3 "bad" ones, as they do ressemble dictionary words. For the last "notaword"
+term we should get an indication that no dictionary word is sufficiently similar.
+
+### Locating Similar Words ###
 We're now ready to visit each term and test if it exists in the dictionary;
 if it doesn't we traverse the dictionary comparing each word and selecting it
 if similar to the term:
@@ -382,8 +392,10 @@ on collections. This method takes a block of code as argument. Thus, if we want
 to print all terms we say `terms.foreach(println)`. Expressive!
 
 In the above code snippet we filter out the terms occurring in the dictionary and
-then, for each unknown word, we filter out dictionary words not sufficiently similar.
-We achieved this by means of `foreach` and `if` (ugh!).
+then, for each unknown word, we collect its similar dictionary words.
+We achieve this by means of `foreach` and `if` (ugh!).
+
+### Functional Collections ###
 
 In functional programming, common operations on collections are implemented as _functions_
 (in Scala, methods) so that the programmer is not required to endlessly write loops and
@@ -395,8 +407,8 @@ Thus, a more idiomatic way to write our word-collecting loop is:
 terms.
   filter(term => !(dictionary contains term)).
   foreach { term =>
-    val similars = dictionary filter { word =>
-      levenshtein.getDistance(term, word) >= minSimilarity
+    val similars = dictionary filter { word =>  
+      levenshtein.getDistance(term, word) >= minSimilarity  
     }
     if (similars isEmpty)
       println(s"Whaddaya mean '$term'?")
@@ -407,13 +419,14 @@ terms.
 
 This will output:
 >
-badd: you probably meant one of Set(bald, band, bade, bad, bard, add, baud)  
-wurd: you probably meant one of Set(kurd, curd, ward, turd, word)  
+badd: you probably meant one of Set(bad, bald, band, bade, bard, add, baud)  
+wurd: you probably meant one of Set(word, kurd, curd, ward, turd)  
 herre: you probably meant one of Set(here)  
 Whaddaya mean 'notaword'?
 
 This humble code snippet has a wealth of useful information for us. Let's embark!
 
+### Filtering Collections ###
 Our first step is to filter out terms appearing in the dictionary:
 
 ```scala
@@ -427,6 +440,8 @@ the `filter` predicate (namely, that the given term is not contained in the dict
 each element in the collection. This block of code must return a `Boolean` value indicating
 whether the given element satisfies a predicate or not. If it does, the element is included
 in the output collection; otherwise, it is omitted.
+
+### Anonymous Functions (Lambdas) ###
 
 Blocks of code passed as arguments are referred to as [_lambdas_](http://en.wikipedia.org/wiki/Anonymous_function). This construction is very familiar to
 Rubyists and Pythonistas and has found its way into strongly typed languages such as C#,
@@ -446,6 +461,8 @@ body:
 someWord => !(dictionary contains someWord)
 ```
 
+### Anonymous Lambda Arguments ###
+
 In scala, when the lambda argument is used only once in the body it can be replaced by
 the underscore anonymous variable (`_`). Thus our filter expression could be rewritten as:
 
@@ -463,25 +480,34 @@ the `filterNot` function instead of `filter`:
 terms.filterNot(dictionary.contains(_))
 ```
 
-This, in turn, opens the way for one further simplification: when a lambda body consists
+### Functions as Arguments ###
+
+We have room for one further simplification: when a lambda body consists
 of a single function whose only argument is the lambda argument itself then we can pass
-just the function name. Thus, the above is equivalent to:
+just the function name. Thus, instead of
 
 ```scala
-terms.filterNot(dictionary.contains)
+terms.filterNot(dictionary.contains(_))
+```
+
+We can just say:
+
+```scala
+terms.filterNot(dictionary.contains) // Look ma: no argument, not even an underscore!
 ```
 
 This may look a bit terse at first but, for the trained eye, it's actually much more legible
 and informative.
 
 Why? Functional programming emphasizes _what_ is to be done rather than _how_ to do it. This
-is achieved by expressing computations as successive data transformations rather than
-explicit operations _upon_ data. And data transformations are embodied as -you guessed it-
-functions.
+is achieved by expressing computations as a succession of data transformations rather than
+operations modifying data in place.
 
 Thus, when we see `terms.filterNot(dictionary.contains)` it reads like "weed out terms
 not contained in the dictionary." We emphasize what the filtering function does rather
 than how to call it.
+
+### Functional Collection Transformations ###
 
 Processing data through successive transformations on collections is a time-honored
 concept. Let's recall the classic, sales-pitch Unix example:
@@ -489,14 +515,14 @@ concept. Let's recall the classic, sales-pitch Unix example:
 ```bash
 cat *.txt |  # Collect the text files
 tr A-Z a-z |  # Make all words lowercase
-tr -cs a-z '\012' |  # Remove non-alphas, putting each word on a separate line
+tr -cs a-z '\012' |  # Remove non-alphas, outputting each word on a separate line
 sort -u -o dictionary.txt  # Order by word -suppressing duplicates- onto dictionary file
 ```
 
 Wow, we can build a dictionary with four simple commands in a single pipeline!
 
-This style of successive collection transformation rings a bell...
-yes: our early formulation of the spelling suggestion algorithm!
+This style of successive collection transformation is the basis of our early formulation
+of the spelling suggestion algorithm:
 
 ```scala
 val suggestions =
@@ -509,8 +535,7 @@ val suggestions =
   map(_._1) // extract only the word, leaving out the similarity score
 ```
 
-Uff! A whole lot of information to justify the one-liner 
-`terms.filterNot(dictionary.contains)`
+### Separating Data Production from Data Consumption ###
 
 Let's continue with the remaining part of our suggestion script:
 
@@ -554,6 +579,8 @@ suggestions foreach { case(term, similars) =>
 }
 ```
 
+### Mapping Collections ###
+
 To build the suggestion list above, we filter out terms present in the dictionary and then
 we use the collection method `map` to convert each unknown term into a tuple containing
 the term and its similar words.
@@ -578,6 +605,8 @@ val similars = dictionary.
   map(_._1) // Produce only first tuple element (word)
 ```
 
+### Concatenating Collections ###
+
 Lastly, let's modify the printing of spelling suggestions to format the ordered set of
 similar words as a comma-separated, parenthesis-enclosed list:
 
@@ -594,7 +623,8 @@ This yields:
 >
 baad: you probably meant one of (baaed, brad, bald, baal, band, bead, bad, bard, baas, baa, baud)  
 worrd: you probably meant one of (worry, world, word)  
-herre: you probably meant one of (here)
+herre: you probably meant one of (here)  
+Whaddaya mean 'notaword'?
 
 The `mkString` function takes a collection and produces a string formed by the
 concatenation of all elements with a prefix, a separator and a suffix:
@@ -604,8 +634,10 @@ val literaryNumbers = Seq(22, 42, 69)
 literaryNumbers.mkString("{", ", ", "}") // yields: {22, 42, 69}
 ```
 
-Uff, a rather long journey to make our humble script more idiomatic. Let's take a look at
-our revised, final version:
+### The Idiomatic Script ###
+
+Uff, we've had a rather long journey to make our humble script more idiomatic. Let's take
+a look at our revised, final version:
 
 ```scala
 val dictionary = io.Source.fromFile("files/words.txt").getLines.toSet
@@ -631,7 +663,7 @@ suggestions foreach { case(term, similars) =>
   if (similars.isEmpty)
     println(s"Whaddaya mean '$term'?")
   else
-    println(s"$term: you probably meant one of (${similars.mkString(", ")})")
+    println(s"$term: you probably meant one of ${similars.mkString("(", ", ", ")")}")
 }
 ```
 
