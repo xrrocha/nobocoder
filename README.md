@@ -676,6 +676,40 @@ While scripting and exploratory programming are a wonderful way to sketch and re
 programming in the large benefits greatly from a rich type system and the organizing
 force of objects, traits and classes.
 
+Scala is a strongly-typed language with a type system significantly richer than that of Java,
+its ancestor in JVM-land. Yet, Scala code is strinkingly less verbose than Java. This is
+possible because -unlike Java- Scala doesn't require the programmer to annotate variables
+and expressions with type information. The Scala compiler is capable of inferring the
+appropriate type of most expressions thus providing the best of both worlds: the economy
+of expression of scripting languages with the type safety of industrial-strength programming
+languages.
+
+>
+Note: Haskell's type inference is more powerful than Scala's; every now and then the Scala programmer has to lend the compiler a hand.
+
+### Classes, Traits and Objects ###
+
+Scala classes correspond closely to the notion of class in most object-oriented classes:
+a class groups together data fields and functions/methods. Like in Java,
+a class can extend at most one other class.
+
+![phone](img/phone.jpg)
+
+A Scala _trait_ could be compared to a Java interface but it's a much more capable construct.
+Traits can have fields and method bodies as well as abstract members. Unlike a class,
+however, a trait cannot be directly instantiated. Traits exist solely to be extended by
+other traits, classes or objects.
+
+While a Scala class can extend at most one other class, it can (and frequently does) extend
+multiple traits. Because traits can carry method and field implementations some people see
+this as multiple inheritance but that would be somewhat mistaken. Traits are probably closer
+to Ruby or Python [mixins](http://en.wikipedia.org/wiki/Mixin): they're meant for
+_composition_ rather than inheritance.
+
+In addition to classes and traits, Scala also features _objects_: stand-alone instances
+possibly extending a class and/or several traits.
+
+
 
 
 
