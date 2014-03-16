@@ -712,7 +712,38 @@ be called _static methods_.
 
 ### Classes, Traits and Objects: an Example ###
 
+Let's consider a command-line application to grab the contents of a URL and transcribe
+it to the standard output: a `cat`-like command to display URL's.
+
 ![](img/URLFetcher.png)
+
+In its minimal form, the `URLFetcher` application would look like:
+
+```scala
+import io.Source
+
+object URLFetcher extends App {
+  val DefaultURL = "http://scala-lang.org"
+  val url = if (args.length == 0) DefaultURL else args(0)
+
+  print(Source.fromURL(url).mkString)
+}
+```
+
+A command-line application needs to be an _object_ (not a class!) extending the
+standard `App` trait.
+
+Scala code inside the object is directly executable; there's no need for a
+`main(args: Array[String])` function.
+
+In this skeletal form, our `App` will fetch a URL passed as a command argument. In
+absence of an explicit URL argument it will default to `http://scala-lang.org`.
+
+The `print` function writes to the process' standard output (without appending a trailing
+newline.)
+
+`Source.fromURL(url)` opens the given URL for reading. The trailing `mkString` method
+reads the entire URL contents into a string.
 
 
 
