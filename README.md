@@ -715,8 +715,6 @@ be called _static methods_.
 Let's consider a command-line application to grab the contents of a URL and transcribe
 it to the standard output: a `cat`-like command to display URL's.
 
-![](img/URLFetcher.png)
-
 In its minimal form, the `URLFetcher` application would look like:
 
 ```scala
@@ -760,6 +758,73 @@ We'd see something like:
   <h1>It works!</h1>
 </body>
 </html>
+```
+
+### Adding Trait Mixins ###
+
+Let's add some additional functionality to our command-line application:
+
+- The ability to measure the execution time of a block of code
+- The ability to produce logging messages
+
+![](img/URLFetcher.png)
+
+To measure the execution time of a block of code we need the following trait:
+
+```scala
+trait Timer {
+  def time[A](action: => A) = {
+    val startTime = System.currentTimeMillis()
+    val result = action
+    val endTime = System.currentTimeMillis()
+    (result, endTime - startTime)
+  }
+}
+```
+
+This trait defines a function `time` that:
+
+- takes as argument a code block returning a typed value, and
+- returns a tuple with the code block result and the elapsed time in milliseconds
+
+If we mix this trait into our application we have:
+
+```scala
+object URLFetcher extends App with Timer {
+  val DefaultURL = "http://scala-lang.org"
+  val url = if (args.length == 0) DefaultURL else args(0)
+
+  val (contents, elapsedTime) = time(Source.fromURL(url).mkString)
+  print(contents)
+
+  System.err.println(s"Elapsed time: $elapsedTime milliseconds")
+}
+```
+
+To log messages at different levels we need the following trait:
+
+```scala
+trait Logger {
+  val dateFormat = new java.text.SimpleDateFormat("yyyy-MM-dd hh:mm:ss")
+
+  def log(message: String) {
+    System.err.println(s"[${dateFormat.format(new java.util.Date)}] $message")
+  }
+}
+```
+
+When we mix this trait to our application we now have:
+
+```scala
+object URLFetcher extends App with Timer with Logger {
+  val DefaultURL = "http://scala-lang.org"
+  val url = if (args.length == 0) DefaultURL else args(0)
+
+  val (contents, elapsedTime) = time(Source.fromURL(url).mkString)
+  print(contents)
+
+  log(s"Elapsed time: $elapsedTime milliseconds")
+}
 ```
 
 
