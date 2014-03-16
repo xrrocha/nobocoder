@@ -381,12 +381,152 @@ terms foreach { term =>
 >
 Note: instead of saying _`foreach term in terms { ... }`_ in Scala we say
 `terms foreach { ... }`. This is so because `foreach` is a _method_ defined
-on collections that takes a block of code as argument. Thus, if we wanted to
-print all terms we'd say `terms.foreach(println)`.
+on collections. Ths method takes a block of code as argument. Thus, if we want
+to print all terms we say `terms.foreach(println)`. Expressive!
 
-In regard to collecting words similar to unknown terms, the above traversal code
-reveals the _process_ but not so much the _intention_: we want to filter out the terms
-occurring in the dictionary and then, further, we want to filter out the dictionary
-words that are not sufficiently similar to each unkown term.
+In the above code snippet we filter out the terms occurring in the dictionary and
+then, for each unknown word, we filter out dictionary words not sufficiently similar.
+We achieve this by means of `foreach` and `if`.
+
+In functional programming, common operations on collections are implemented as functions
+(in Scala, methods) rather than requiring the programmer to endlessly write loops and
+conditionals.
+
+Thus, a more idiomatic way to write our word-collecting loop is:
+
+```scala
+terms.
+  filter(term => !(dictionary contains term)).
+  foreach { term =>
+    val similars = dictionary filter { word =>
+      levenshtein.getDistance(term, word) >= minSimilarity
+    }
+    if (similars isEmpty)
+      println(s"Whaddaya mean '$term'?")
+    else
+      println(s"$term: you probably meant one of $similars")
+  }
+```
+
+This will output:
+>
+badd: you probably meant one of Set(bald, band, bade, bad, bard, add, baud)  
+wurd: you probably meant one of Set(kurd, curd, ward, turd, word)  
+herre: you probably meant one of Set(here)  
+Whaddaya mean 'notaword'?
+
+Let's take a look at this version.
+
+We first filter out term appearing in the dictionary:
+
+```scala
+terms.filter(term => !(dictionary contains term))
+```
+
+Here, we visit each element in the `terms` collection selecting only those elements matching
+the `filter` predicate (namely, that the given term is not contained in the dictionary.)
+
+`filter` is a collection method that takes as argument a block of code to be executed for
+each element in the collection. This block of code must return a `Boolean` value indicating
+whether the given element satisfies a predicate or not. If it does, the element is included
+in the output collection; otherwise, it is omitted.
+
+Blocks of code passed as arguments are referred to as [_lambdas_](http://en.wikipedia.org/wiki/Anonymous_function). This construction is very familiar to
+Rubyists and Pythonistas and has found its way into strongly typed languages such as C#,
+C++ and Java.
+
+In order to refer to the current element inside our lambda we start the code block with
+a variable name followed by a fat arrow, followed by the actual predicate:
+
+```scala
+term => !(dictionary contains term)
+```
+
+Any variable name will do for the lambda argument as long as we use it consistently in the
+body. For instance:
+
+```scala
+someWord => !(dictionary contains someWord)
+```
+
+In scala, when the lambda argument is used only once it can be replaced by the underscore
+anonymous variable (`_`). Thus our filter expression could be rewritten as:
+
+```scala
+terms.filter(!dictionary.contains(_))
+```
+
+Scala's underscore is roughly equivalent to Groovy's (and Xtend's) `it` anonymous lambda
+argument.
+
+In our specific case, because we're negating the dictionary membership test, we could use
+the `filterNot` function instead of `filter`:
+
+```scala
+terms.filterNot(dictionary.contains(_))
+```
+
+Which opens the way for one last simplification: when a lambda body consists of
+a single function whose only argument is the lambda argument itself then we can write
+just the function name. Thus, the above is equivalent to:
+
+```scala
+terms.filterNot(dictionary.contains)
+```
+
+This may look a bit terse at first but, for the trained eye, it's actually much more legible
+and informative.
+
+Why? Functional programming emphasizes _what_ is to be done rather than _how_ to do it. This
+is achieved by expressing computations as successive data transformations rather than
+explicit operations _upon_ data. And data transformations are embodied as -you guessed it-
+functions.
+
+Thus, when we see `terms.filterNot(dictionary.contains)` it reads like "weed out terms
+not contained in the dictionary." We emphasize what the function does rather than how
+to call it.
+
+This concept is not totally alien to imperative programming. In venerable C, for instance,
+there are pointers to functions allowing us to pass functions around as arguments. That's
+why we can write a generic binary search algorithm where the only "moving part" is the actual
+element comparison (which is passed as an argument to the algorithm via a pointer to
+function.)
+
+Likewise, processing data through successive transformations on collections is a time-honored
+concept. Let's recall the classic, sales-pitch Unix example:
+
+```bash
+cat *.txt |  # Collect the files
+tr A-Z a-z |  # Make case uniform
+tr -cs a-z '\012' |  # Put each word on a separate line
+sort -u -o dictionary.txt  # Order by word -suppressing duplicates- onto dictionary file
+```
+
+This style of collection manipulation rings a bell... yes: our early formulation of the
+spelling suggestion algorithm:
+
+```scala
+val suggestions: Seq[String] =
+  ngram(typo). // extract bigrams from typo
+  flatMap(ngram2words). // replace each bigram by its associated words
+  distinct. // remove duplicate words
+  map(word => (word, levenshtein.getDistance(word, typo))) // compare each word with typo
+  filter(_._2 >= minSimilarity). // remove words not sufficiently similar
+  sortBy(-_._2). // sort in descending similarity order (more similar words first)
+  map(_._1) // extract only the word, leaving out the similarity score
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
