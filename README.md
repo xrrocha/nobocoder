@@ -45,7 +45,7 @@ and is typically used to compare person names.
 For our implementation we'll use Apache Lucene's
 [string distance support](http://lucene.apache.org/core/3_5_0/api/contrib-spellchecker/org/apache/lucene/search/spell/StringDistance.html).
 
-## Similarity Examples ##
+### Similarity Examples ###
 
 Consider the following dictionary fragment:
 
@@ -82,7 +82,7 @@ As we can see, we need to establish a _minimum similarity_ threshold for each me
 in order to weed out not-so-similar terms. In the above example, it would appear that
 anything below `0.7` for the Levenshtein metric is probably not similar enough.
 
-## Comparison Explosion ##
+### Comparison Explosion ###
 
 In order to be exhaustive, a naïve spelling suggestion implementation would compare
 each unknown word with _all_ words in the dictionary collecting only those whose
@@ -101,7 +101,7 @@ Thus, for a 72k-word dictionary and a Levenshtein threshold of `0.725`, the foll
 |academmy|academy, academia, academic|
 |accountn|account, accounts, accountant, accounting, accounted, accountancy, accountants|
 
-## N-Grams to the Rescue ##
+### N-Grams to the Rescue ###
 
 An inexpensive mechanism is needed to avoid performing costly comparisons most of
 which will yield scores below the minimum similarity threshold.
@@ -137,7 +137,7 @@ at least _one_ bigram expunges a surprisingly high number of otherwise wasteful 
 Equipped with this knowledge we can now identify the data structures needed by our
 basic algorithm.
 
-## Spelling Suggestion Algorithm ##
+## Spelling Data Structures ##
 
 Spelling suggestion requires two operations:
 
@@ -236,10 +236,13 @@ Levenshtein similarity metric:
 With a minimum similarity of `0.75` only the words _accent_ and _accept_ would be
 returned as suggestions.
 
-The data structure we need, this, is a `Map` where the keys are bigrams (`String`) and the values are the list of words containing the bigram
+The data structure we need to locate similar words is a `Map` where the keys are
+bigrams (`String`) and the values are the list of words containing the bigram
 (`Seq[String]`).
 
-With these data structures we can now sketch our algorithm in Scala as follows:
+## Spelling Suggestion Algorithm ##
+
+We can now sketch our algorithm in Scala as follows:
 
 ```scala
 val ngram2words: Map[String, Seq[String]] = ... // Initialize map of ngram to word list here
@@ -372,8 +375,8 @@ term we should get an indication that no dictionary word is sufficiently similar
 
 ### Locating Similar Words ###
 We're now ready to visit each term and test if it exists in the dictionary;
-if it doesn't we traverse the dictionary comparing each word and selecting it
-if similar to the term:
+if it doesn't we traverse the dictionary collecting words similar to the
+term:
 
 ```scala
 terms foreach { term =>
@@ -387,9 +390,9 @@ terms foreach { term =>
 
 >
 Note: instead of saying _`foreach term in terms { ... }`_ in Scala we say
-`terms foreach { ... }`. This is so because `foreach` is a _method_ defined
-on collections. This method takes a block of code as argument. Thus, if we want
-to print all terms we say `terms.foreach(println)`. Expressive!
+`terms foreach { ... }`. This is so because `foreach` is actually a _method_
+defined on collections. This method takes a block of code as argument. Thus,
+if we want to print all terms we say `terms.foreach(println)`. Expressive!
 
 In the above code snippet we filter out the terms occurring in the dictionary and
 then, for each unknown word, we collect its similar dictionary words.
@@ -583,7 +586,7 @@ suggestions foreach { case(term, similars) =>
 
 To build the suggestion list above, we filter out terms present in the dictionary and then
 we use the collection method `map` to convert each unknown term into a tuple containing
-the term and its similar words.
+the term and its similars.
 
 Like `filter`, `map` takes as argument a function that accepts each collection element,
 but whereas `filter` matches elements, `map` _transforms_ them. Thus, the collection
