@@ -13,7 +13,7 @@ In its simplest form, spelling checking is carried out by looking up words
 in a dictionary.
 
 Words found in the dictionary are deemed to be correct and, therefore, don't
-need any suggestion.
+trigger any suggestion.
 
 Words not found in the dictionary, on the other hand, can be either:
 
@@ -26,7 +26,7 @@ The key word above is _similar_: how do we decide whether two words are similar
 enough so as to recommend one as a possible replacement for the other?
 
 _String similarity_ algorithms quantify the similarity between pairs of strings.
-Customarily, similarity values oscillate between `0` (not similar at all) to `1`
+Customarily, similarity values oscillate between `0` (not at all similar) to `1`
 (exactly equal.) String similarity metrics are also referred to as _string distance_
 metrics.
 
@@ -381,14 +381,14 @@ terms foreach { term =>
 >
 Note: instead of saying _`foreach term in terms { ... }`_ in Scala we say
 `terms foreach { ... }`. This is so because `foreach` is a _method_ defined
-on collections. Ths method takes a block of code as argument. Thus, if we want
+on collections. This method takes a block of code as argument. Thus, if we want
 to print all terms we say `terms.foreach(println)`. Expressive!
 
 In the above code snippet we filter out the terms occurring in the dictionary and
 then, for each unknown word, we filter out dictionary words not sufficiently similar.
-We achieve this by means of `foreach` and `if`.
+We achieved this by means of `foreach` and `if` (ugh!).
 
-In functional programming, common operations on collections are implemented as functions
+In functional programming, common operations on collections are implemented as _functions_
 (in Scala, methods) rather than requiring the programmer to endlessly write loops and
 conditionals.
 
@@ -499,34 +499,6 @@ void * binary_search (
     int width, // The width of each element in the array
     int (*compare)(void *, void *) // The comparison function
 )
-{
-    void *lo = base;
-    void *hi = base + (num - 1) * width;
-    void *mid;
-    int half;
-    int result;
-
-    while (lo <= hi)
-        if (half = num / 2) {
-            mid = lo + (num & 1 ? half : (half - 1)) * width;
-            if (!(result = (*compare)(key,mid)))
-                return(mid);
-            else if (result < 0) {
-                hi = mid - width;
-                num = num & 1 ? half : half-1;
-            }
-            else    {
-                lo = mid + width;
-                num = half;
-            }
-        }
-        else if (num)
-            return((*compare)(key,lo) ? NULL : lo);
-        else
-            break;
-
-    return(NULL);
-}
 ```
 
 Likewise, processing data through successive transformations on collections is a time-honored
