@@ -4,8 +4,7 @@ package nobocoder.spelling.functional
 trait NGramBuilder {
   def ngramLength: Int = 3
 
-  def ngrams(string: String): Seq[String] =
-    string.
+  def ngrams(string: String): Seq[String] = string.
       split(' ').
       filter(_.length >= ngramLength).
       flatMap(_.sliding(ngramLength).filter(_.size == ngramLength)).

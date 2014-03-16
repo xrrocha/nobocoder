@@ -440,7 +440,7 @@ Here, we visit each element in the `terms` collection selecting only those eleme
 the `filter` predicate (namely, that the given term is not contained in the dictionary.)
 
 `filter` is a collection method that takes as argument a block of code to be executed for
-each element in the collection. This block of code must return a `Boolean` value indicating
+each element in the collection. This block of code returns a `Boolean` value indicating
 whether the given element satisfies a predicate or not. If it does, the element is included
 in the output collection; otherwise, it is omitted.
 
@@ -639,7 +639,7 @@ literaryNumbers.mkString("{", ", ", "}") // yields: {22, 42, 69}
 
 ### The Idiomatic Script ###
 
-Uff, we've had a rather long journey to make our humble script more idiomatic. Let's take
+Uff! We've had a rather long journey to make our humble script more idiomatic. Let's take
 a look at our revised, final version:
 
 ```scala
@@ -669,6 +669,13 @@ suggestions foreach { case(term, similars) =>
     println(s"$term: you probably meant one of ${similars.mkString("(", ", ", ")")}")
 }
 ```
+
+## Beyond Scripts: Object-oriented Scala ##
+
+While scripting and exploratory programming are a wonderful way to sketch and refine code,
+programming in the large benefits greatly from a rich type system and the organizing
+force of objects, traits and classes.
+
 
 
 
