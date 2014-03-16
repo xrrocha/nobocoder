@@ -219,8 +219,8 @@ The union set of these related words is:
 ||account|
 ||accountant|                                                                                                                                                                  ||acid|
 
-We can now compare our typo _accet_ with each of these related words using
-Levenshtein:
+We can now compare our typo _accet_ with each of these related words using the
+Levenshtein similarity metric:
 
 |Typo|Word|Score|
 |----|----|-----|
@@ -236,10 +236,10 @@ Levenshtein:
 With a minimum similarity of `0.75` only the words _accent_ and _accept_ would be
 returned as suggestions.
 
-The data structure needed for our purposes is a `Map` where the keys are bigrams (`String`) and the values are the list of words containing the bigram
+The data structure we need, this, is a `Map` where the keys are bigrams (`String`) and the values are the list of words containing the bigram
 (`Seq[String]`).
 
-With this data we can now sketch our algorithm in Scala as follows:
+With these data structures we can now sketch our algorithm in Scala as follows:
 
 ```scala
 val ngram2words: Map[String, Seq[String]] = ... // Initialize map of ngram to word list here
@@ -265,7 +265,7 @@ Don't worry about the seemingly cryptic syntax; as we advance in our presentatio
 things will fall neatly into place.
 
 For now, note how compact the suggestion compilation logic looks thanks to Scala's
-functional ollections!
+functional collections!
 
 ## Scala as a Scripting Language ##
 
@@ -294,7 +294,7 @@ val minSimilarity = 0.75
 val levenshtein = new org.apache.lucene.search.spell.LevensteinDistance
 
 // Set the terms being examined
-val terms = Seq("good", "word", "here", "badd", "wurd", "herre")
+val terms = Seq("good", "word", "here", "badd", "wurd", "herre", "notaword")
 
 terms foreach { term =>
   if (!(dictionary contains term))
@@ -324,7 +324,7 @@ herre: did you mean here?
 
 Let's dissect this script.
 
-Loading the dictionary from disk into a set is pleasantly simple!
+Loading the dictionary from disk into a set is pleasantly simple:
 
 ```scala
 import io.Source
@@ -335,10 +335,10 @@ Scala provides the `io.Source` class to perform read operations on a variety of 
 sources. The `fromFile` function opens a file for reading and returns an instance of
 `Source`. This class has a `getLines` method yielding a string iterator to
 read each line in the file. `Iterator`, in turn, provides a `toSet` method that builds
-a `Set`  suitable for efficient membership testing. Cool
+a `Set`  suitable for efficient membership testing. Cool!
 
 Next, we build a similarity scorer using Lucene's implementation of the Levenshtein
-(or, as they prefer to write it, _levenstein_) algorithm:
+(or, as they prefer to spell it, _levenstein_) algorithm:
 
 ```scala
 // Build the similarity scorer
@@ -352,7 +352,7 @@ val levenshtein = new LevensteinDistance
 2 strings:
 
 ```scala
-levenshtein.getDistance("nobocder", "novocoder") // 0.8888889
+levenshtein.getDistance("nobocder", "novocoder") // yields: 0.8888889
 ```
 
 We then populate a list of test terms to exercise our suggestion approach:
@@ -489,7 +489,7 @@ concept. Let's recall the classic, sales-pitch Unix example:
 ```bash
 cat *.txt |  # Collect the text files
 tr A-Z a-z |  # Make all words lowercase
-tr -cs a-z '\012' |  # Put each word on a separate line
+tr -cs a-z '\012' |  # Remove non-alphas, putting each word on a separate line
 sort -u -o dictionary.txt  # Order by word -suppressing duplicates- onto dictionary file
 ```
 
@@ -525,7 +525,7 @@ foreach { term =>
 ```
 
 Here, for each term not in our dictionary, we identify what dictionary words are similar
-by the brute-force method of comparing the unknown term with every word in the dictionary (yes, yes, we'll improve upon this later.) We then complain if there are no similar words
+by the brute-force method of comparing the unknown term with every word in the dictionary (yes, we'll improve upon this later.) We then complain if there are no similar words
 or show a list of suggestions otherwise.
 
 This snippet still has something smelly about it: it incurs in the sin of consuming
@@ -554,18 +554,19 @@ suggestions foreach { case(term, similars) =>
 }
 ```
 
-After filtering out terms present in the dictionary, we use the collection method `map` to
-convert each unknown term into a tuple containing the term and its similar words.
+To build the suggestion list above, we filter out terms present in the dictionary and then
+we use the collection method `map` to convert each unknown term into a tuple containing
+the term and its similar words.
 
 Like `filter`, `map` takes as argument a function that accepts each collection element,
 but whereas `filter` matches elements, `map` _transforms_ them. Thus, the collection
 resulting from applying `map` has as many elements as the input collection:
 
 ```scala
-"nobocoder".map(_.toUpper) // yields "NOBOCODER"
+"nobocoder".map(_.toUpper) // yields: "NOBOCODER"
 ```
 
-Let's make further use of `map` in our snippet to order the term's similar words so that
+Let's make further use of `map` in our snippet to sort the term's similar words so that
 the most similar ones are presented first:
 
 ```scala
@@ -578,7 +579,7 @@ val similars = dictionary.
 ```
 
 Lastly, let's modify the printing of spelling suggestions to format the ordered set of
-similar words as a comma-separated list:
+similar words as a comma-separated, brace-enclosed list:
 
 ```scala
 suggestions foreach { case(term, similars) =>
@@ -597,8 +598,8 @@ val literaryNumbers = Seq(22, 42, 69)
 literaryNumbers.mkString("{", ", ", "}") // yields: {22, 42, 69}
 ```
 
-Uff, a rather long journey to make our humble script more idiomatic. Let's taksufe a look at
-our final, revised version:
+Uff, a rather long journey to make our humble script more idiomatic. Let's take a look at
+our revised, final version:
 
 ```scala
 val dictionary = io.Source.fromFile("files/words.txt").getLines.toSet
