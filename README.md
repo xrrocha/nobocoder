@@ -590,6 +590,12 @@ suggestions foreach { case(term, similars) =>
 }
 ```
 
+This yields:
+>
+baad: you probably meant one of (baaed, brad, bald, baal, band, bead, bad, bard, baas, baa, baud)  
+worrd: you probably meant one of (worry, world, word)  
+herre: you probably meant one of (here)
+
 The `mkString` function takes a collection and produces a string formed by the
 concatenation of all elements with a prefix, a separator and a suffix:
 
