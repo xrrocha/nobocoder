@@ -586,7 +586,7 @@ suggestions foreach { case(term, similars) =>
   if (similars.isEmpty)
     println(s"Whaddaya mean '$term'?")
   else
-    println(s"$term: you probably meant one of (${similars.mkString(", ")})")
+    println(s"$term: you probably meant one of (${similars.mkString("{", ", ", "}")})")
 }
 ```
 
