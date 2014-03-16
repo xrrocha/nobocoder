@@ -579,14 +579,14 @@ val similars = dictionary.
 ```
 
 Lastly, let's modify the printing of spelling suggestions to format the ordered set of
-similar words as a comma-separated, brace-enclosed list:
+similar words as a comma-separated, parenthesis-enclosed list:
 
 ```scala
 suggestions foreach { case(term, similars) =>
   if (similars.isEmpty)
     println(s"Whaddaya mean '$term'?")
   else
-    println(s"$term: you probably meant one of (${similars.mkString("{", ", ", "}")})")
+    println(s"$term: you probably meant one of ${similars.mkString("(", ", ", ")")}")
 }
 ```
 
@@ -612,8 +612,7 @@ val terms = Seq("good", "word", "here", "badd", "wurd", "herre", "notaword")
 val suggestions = terms.
   filterNot(dictionary.contains).
   map { term =>
-    val similars = dictionary.
-      toSeq.
+    val similars = dictionary.toSeq.
       map(word => (word, levenshtein.getDistance(term, word))).
       filter(_._2 >= minSimilarity).
       sortBy(-_._2).
