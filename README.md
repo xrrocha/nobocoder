@@ -681,20 +681,16 @@ its ancestor in JVM-land. Yet, Scala code is strinkingly less verbose than Java.
 possible because -unlike Java- Scala doesn't require the programmer to annotate variables
 and expressions with type information. The Scala compiler is capable of inferring the
 appropriate type of most expressions thus providing the best of both worlds: the economy
-of expression of scripting languages with the type safety of industrial-strength programming
-languages.
-
->
-Note: Haskell's type inference is more powerful than Scala's; every now and then the Scala programmer has to lend the compiler a hand.
+of expression of scripting languages with the type safety of industrial-strength programming languages.
 
 ### Classes, Traits and Objects ###
 
 Scala classes correspond closely to the notion of class in most object-oriented classes:
-a class groups together data fields and functions/methods. Like in Java,
-a class can extend at most one other class.
+a class groups together data fields and functions (methods.)
 
-Class inheritance, however, is far less common in Scala than in other object-oriented
-languages; in most cases classes extend traits.
+Like in Java, a class can extend at most one other class. Class inheritance, however, is
+far less common in Scala than in other object-oriented languages; in most cases classes
+extend traits.
 
 A Scala _trait_ could be compared to a Java interface but it's a much more capable construct. Traits can have fields and method bodies as well as abstract members.
 Unlike a class, however, a trait cannot be directly instantiated: traits exist solely
@@ -707,16 +703,16 @@ closer to Ruby or Python [mixins](http://en.wikipedia.org/wiki/Mixin): they're m
 _composition_ rather than inheritance.
 
 In addition to classes and traits, Scala also features _objects_: stand-alone instances
-possibly extending a class and/or several traits.
+possibly extending a class and/or one or more traits.
 
 When an object has the same name as a class or trait it's dubbed their _companion object_.
-A companion object doesn't have to extend its associated class or trait (in practice it
-normally doesn't.) Companion objects, however, frequently provide functions similar to
-what Java calls static methods.
+A companion object doesn't have to extend its associated class or trait (though it may.)
+Companion objects, however, frequently provide functions similar to what in Java would
+be called _static methods_.
 
 ### Classes, Traits and Objects: an Example ###
 
-
+![](img/URLFetcher.png)
 
 
 
