@@ -511,13 +511,13 @@ tr -cs a-z '\012' |  # Put each word on a separate line
 sort -u -o dictionary.txt  # Order by word -suppressing duplicates- onto dictionary file
 ```
 
-Wow! We can build a dictionary with four simple commands in a single pipeline.
+Wow, we can build a dictionary with four simple commands in a single pipeline!
 
 This style of collection manipulation rings a bell... yes: our early formulation of the
 spelling suggestion algorithm!
 
 ```scala
-val suggestions: Seq[String] =
+val suggestions =
   ngram(typo). // extract bigrams from typo
   flatMap(ngram2words). // replace each bigram by its associated words
   distinct. // remove duplicate words
@@ -526,6 +526,133 @@ val suggestions: Seq[String] =
   sortBy(-_._2). // sort in descending similarity order (more similar words first)
   map(_._1) // extract only the word, leaving out the similarity score
 ```
+
+Uff! A whole lot of information to justify the one-liner 
+`terms.filterNot(dictionary.contains)`
+
+Let's continue with the remaining part of our suggestion script:
+
+```scala
+foreach { term =>
+  val similars = dictionary filter(levenshtein.getDistance(term, _) >= minSimilarity)
+  if (similars isEmpty)
+    println(s"Whaddaya mean '$term'?")
+  else
+    println(s"$term: you probably meant one of $similars")
+}
+```
+
+Here, for each term not in our dictionary, we identify what dictionary words are similar
+by the brute-force method of comparing the unknown term with every word in the dictionary (yes, yes, we'll improve upon this later.) We then complain if there are no similar words
+or show a list of suggestions otherwise.
+
+This snippet still has something smelly about it. For one it incurs in the sin of consuming
+the data in the same context in which it is produced. This practice hinders reuse and makes
+code difficult to understand and modify.
+
+A better way is to store unkown terms and their associated suggestions in a variable and
+then, in a separate step, make use of them by printing messages, sending them over the wire
+or storing them in a database:
+
+```scala
+// Collect the data...
+val suggestions = terms.
+    filterNot(dictionary.contains).
+    map { term =>
+      val similars = dictionary filter(levenshtein.getDistance(term, _) >= minSimilarity)
+      (term, similars)
+    }
+    
+// ... then use it
+suggestions foreach { case(term, similars) =>
+  if (similars.isEmpty)
+    println(s"Whaddaya mean '$term'?")
+  else
+    println(s"$term: you probably meant one of $similars")
+}
+```
+
+After filtering out terms present in the dictionary, we use the collection method `map` to
+convert each unknown term into a tuple containing the term and its similar words.
+
+Like `filter`, `map` takes as argument a function that accepts each collection element,
+but whereas `filter` matches elements, `map` _transforms_ them. Thus, the collection
+resulting from applying `map` has as many elements as the input collection:
+
+```scala
+"nobocoder".map(_.toUpper) // yields "NOBOCODER"
+```
+
+Let's make further use of `map` in our snippet to order the term's similar words so that
+the most similar ones are presented first:
+
+```scala
+val similars = dictionary.
+  toSeq. // Convert dictionary `Set` to `Seq` so as to enable sorting
+  map(word => (word, levenshtein.getDistance(term, word))). // Map each word to the tuple (word, similarity)
+  filter(_._2 >= minSimilarity). // Equivalent to: filter{ case(term, similarity) => similarity >= minSimilarity }
+  sortBy(-_._2). // Equivalent to: sortBy{ case(term, similarity) => -1 * similarity }
+  map(_._1) // Equivalent to: map{ case(term, similarity) => term }
+```
+
+Lastly, let's modify the printing of spelling suggestions to format the ordered set of
+similar words as a comma-separated list:
+
+```scala
+suggestions foreach { case(term, similars) =>
+  if (similars.isEmpty)
+    println(s"Whaddaya mean '$term'?")
+  else
+    println(s"$term: you probably meant one of (${similars.mkString(", ")})")
+}
+```
+
+The `mkString` function takes a collection and produces a string formed by the
+concatenation of all elements with a prefix, a separator and a suffix:
+
+```scala
+val literaryNumbers = Seq(22, 42, 69)
+literaryNumbers.mkString("{", ", ", "}") // yields: {22, 42, 69}
+```
+
+Uff, a rather long journey to make our humble script more idiomatic. Let's take a look at
+our revised version:
+
+```scala
+val dictionary = io.Source.fromFile("files/words.txt").getLines.toSet
+
+val minSimilarity = 0.75
+val levenshtein = new org.apache.lucene.search.spell.LevensteinDistance
+
+val terms = Seq("good", "word", "here", "badd", "wurd", "herre", "notaword")
+
+val suggestions = terms.
+  filterNot(dictionary.contains).
+  map { term =>
+    val similars = dictionary.
+      toSeq.
+      map(word => (word, levenshtein.getDistance(term, word))).
+      filter(_._2 >= minSimilarity).
+      sortBy(-_._2).
+      map(_._1)
+
+    (term, similars)
+  }
+
+suggestions foreach { case(term, similars) =>
+  if (similars.isEmpty)
+    println(s"Whaddaya mean '$term'?")
+  else
+    println(s"$term: you probably meant one of (${similars.mkString(", ")})")
+}
+```
+
+
+
+
+
+
+
 
 
 
