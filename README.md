@@ -264,8 +264,8 @@ val suggestions: Seq[String] =
 Don't worry about the seemingly cryptic syntax; as we advance in our presentation
 things will fall neatly into place.
 
-For now, note how compact the suggestion compilation looks thanks to Scala's functional
-collections!
+For now, note how compact the suggestion compilation logic looks thanks to Scala's
+functional ollections!
 
 ## Scala as a Scripting Language ##
 
@@ -324,7 +324,7 @@ herre: did you mean here?
 
 Let's dissect this script.
 
-Populating the dictionary from disk to an efficient (hash) set is refreshingly simple!
+Loading the dictionary from disk into a set is pleasantly simple!
 
 ```scala
 import io.Source
@@ -335,7 +335,7 @@ Scala provides the `io.Source` class to perform read operations on a variety of 
 sources. The `fromFile` function opens a file for reading and returns an instance of
 `Source`. This class has a `getLines` method yielding a string iterator to
 read each line in the file. `Iterator`, in turn, provides a `toSet` method that builds
-a `Set  suitable for quick membership testing. Cool
+a `Set`  suitable for efficient membership testing. Cool
 
 Next, we build a similarity scorer using Lucene's implementation of the Levenshtein
 (or, as they prefer to write it, _levenstein_) algorithm:
@@ -358,7 +358,7 @@ levenshtein.getDistance("nobocder", "novocoder") // 0.8888889
 We then populate a list of test terms to exercise our suggestion approach:
 
 ```scala
-val terms = Seq("good", "word", "here", "badd", "wurd", "herre")
+val terms = Seq("good", "word", "here", "badd", "wurd", "herre", "notaword")
 ```
 
 We're now ready to visit each term and test if it exists in the dictionary;
@@ -386,7 +386,7 @@ then, for each unknown word, we filter out dictionary words not sufficiently sim
 We achieved this by means of `foreach` and `if` (ugh!).
 
 In functional programming, common operations on collections are implemented as _functions_
-(in Scala, methods) rather than requiring the programmer to endlessly write loops and
+(in Scala, methods) so that the programmer is not required to endlessly write loops and
 conditionals.
 
 Thus, a more idiomatic way to write our word-collecting loop is:
@@ -480,25 +480,10 @@ explicit operations _upon_ data. And data transformations are embodied as -you g
 functions.
 
 Thus, when we see `terms.filterNot(dictionary.contains)` it reads like "weed out terms
-not contained in the dictionary." We emphasize what the function does rather than how
-to call it.
+not contained in the dictionary." We emphasize what the filtering function does rather
+than how to call it.
 
-This concept is not totally alien to imperative programming. In venerable C, for instance,
-there are pointers to functions allowing us to pass functions around as arguments. That's
-why we can write a generic binary search algorithm where the only "moving part" is the actual
-element comparison (passed as an argument to the algorithm via a pointer to function.)
-
-```c
-void * binary_search (
-    void *key, // The search key
-    void *base, // The sorted array's initial address
-    int num, // The sorted array's number of elements
-    int width, // The width of each element in the array
-    int (*compare)(void *, void *) // The comparison function
-)
-```
-
-Likewise, processing data through successive transformations on collections is a time-honored
+Processing data through successive transformations on collections is a time-honored
 concept. Let's recall the classic, sales-pitch Unix example:
 
 ```bash
@@ -612,7 +597,7 @@ val literaryNumbers = Seq(22, 42, 69)
 literaryNumbers.mkString("{", ", ", "}") // yields: {22, 42, 69}
 ```
 
-Uff, a rather long journey to make our humble script more idiomatic. Let's take a look at
+Uff, a rather long journey to make our humble script more idiomatic. Let's taksufe a look at
 our final, revised version:
 
 ```scala
