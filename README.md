@@ -415,9 +415,9 @@ wurd: you probably meant one of Set(kurd, curd, ward, turd, word)
 herre: you probably meant one of Set(here)  
 Whaddaya mean 'notaword'?
 
-Let's take a look at this version.
+This humble code snippet has a wealth of useful information for us. Let's embark!
 
-We first filter out term appearing in the dictionary:
+Our first step is to filter out terms appearing in the dictionary:
 
 ```scala
 terms.filter(term => !(dictionary contains term))
@@ -443,20 +443,20 @@ term => !(dictionary contains term)
 ```
 
 Any variable name will do for the lambda argument as long as we use it consistently in the
-body. For instance:
+body:
 
 ```scala
 someWord => !(dictionary contains someWord)
 ```
 
-In scala, when the lambda argument is used only once it can be replaced by the underscore
-anonymous variable (`_`). Thus our filter expression could be rewritten as:
+In scala, when the lambda argument is used only once in the body it can be replaced by
+the underscore anonymous variable (`_`). Thus our filter expression could be rewritten as:
 
 ```scala
 terms.filter(!dictionary.contains(_))
 ```
 
-Scala's underscore is roughly equivalent to Groovy's (and Xtend's) `it` anonymous lambda
+Scala's underscore is roughly equivalent to Groovy's and Xtend's `it` implicit lambda
 argument.
 
 In our specific case, because we're negating the dictionary membership test, we could use
@@ -466,8 +466,8 @@ the `filterNot` function instead of `filter`:
 terms.filterNot(dictionary.contains(_))
 ```
 
-Which opens the way for one last simplification: when a lambda body consists of
-a single function whose only argument is the lambda argument itself then we can write
+This, in turn, opens the way for one further simplification: when a lambda body consists
+of a single function whose only argument is the lambda argument itself then we can pass
 just the function name. Thus, the above is equivalent to:
 
 ```scala
@@ -489,21 +489,60 @@ to call it.
 This concept is not totally alien to imperative programming. In venerable C, for instance,
 there are pointers to functions allowing us to pass functions around as arguments. That's
 why we can write a generic binary search algorithm where the only "moving part" is the actual
-element comparison (which is passed as an argument to the algorithm via a pointer to
-function.)
+element comparison (passed as an argument to the algorithm via a pointer to function.)
+
+```c
+void * binary_search (
+    void *key, // The search key
+    void *base, // The sorted array's initial address
+    int num, // The sorted array's number of elements
+    int width, // The width of each element in the array
+    int (*compare)(void *, void *) // The comparison function
+)
+{
+    void *lo = base;
+    void *hi = base + (num - 1) * width;
+    void *mid;
+    int half;
+    int result;
+
+    while (lo <= hi)
+        if (half = num / 2) {
+            mid = lo + (num & 1 ? half : (half - 1)) * width;
+            if (!(result = (*compare)(key,mid)))
+                return(mid);
+            else if (result < 0) {
+                hi = mid - width;
+                num = num & 1 ? half : half-1;
+            }
+            else    {
+                lo = mid + width;
+                num = half;
+            }
+        }
+        else if (num)
+            return((*compare)(key,lo) ? NULL : lo);
+        else
+            break;
+
+    return(NULL);
+}
+```
 
 Likewise, processing data through successive transformations on collections is a time-honored
 concept. Let's recall the classic, sales-pitch Unix example:
 
 ```bash
-cat *.txt |  # Collect the files
-tr A-Z a-z |  # Make case uniform
+cat *.txt |  # Collect the text files
+tr A-Z a-z |  # Make all words lowercase
 tr -cs a-z '\012' |  # Put each word on a separate line
 sort -u -o dictionary.txt  # Order by word -suppressing duplicates- onto dictionary file
 ```
 
+Wow! We can build a dictionary with four simple commands in a single pipeline.
+
 This style of collection manipulation rings a bell... yes: our early formulation of the
-spelling suggestion algorithm:
+spelling suggestion algorithm!
 
 ```scala
 val suggestions: Seq[String] =
