@@ -954,6 +954,8 @@ This is a case of trait composition also called the _cake pattern_. Here,
 `SpellChecker` is a trait expecting to be mixed with traits `DictionaryBuilder`,
 `NGram2WordBuilder` and `SimilarityScorer`.
 
+![](img/SpellChecker.png)
+
 Each of these required traits can have multiple implementations. For instance,
 a `DictionaryBuilder` can build an in-memory dictionary set from a filesystem text file
 `(FileDictionaryBuilder)` or from a database table `(JDBCDictionaryBuilder)`.
