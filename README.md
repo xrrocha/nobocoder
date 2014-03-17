@@ -813,7 +813,7 @@ trait Logger {
 }
 ```
 
-When we mix this trait to our application we now have:
+After mixin this trait to our application we have:
 
 ```scala
 object URLFetcher extends App with Timer with Logger {
@@ -827,6 +827,12 @@ object URLFetcher extends App with Timer with Logger {
 }
 ```
 
+When we run this application we see, in addition to the URL contents, a trailing
+line like the following:
+
+```
+[2014-03-16 07:57:44] Elapsed time: 846 milliseconds
+```
 
 
 
