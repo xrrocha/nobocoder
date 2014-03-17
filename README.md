@@ -882,7 +882,7 @@ object Greeter extends App {
   println("Hello world")
 }
 
-// Voicì un singleton
+// Voicì un singleton. Why go for a class when an object suffices?
 object Capitalizer extends Formatter[String] {
   def format(string: String) = string.toUpperCase
 }
@@ -899,8 +899,11 @@ object NGram {
   // A data class
   case class Suggestion(unknownTerm: String, similarWords: Seq[String])
   
+  // A constant
+  val DefaultNGramLength = 2
+  
   // A function
-  def ngrams(string: String, length: Int = 2) = ...
+  def ngrams(string: String, length: Int = DefaultNGramLength) = ...
 }
 . . .
 import NGram._
@@ -915,7 +918,24 @@ Companion objects frequently provide functions similar to what in Java would
 be called _static methods_.
 
 ```scala
-```
+import com.typesafe.scalalogging.slf4j.Logging
+
+trait Tokenizer {
+  def tokenize(string: String): Seq[String]
+}
+
+class DefaultTokenizer(separator: String) extends Tokenizer {
+  def tokenize(string: String) = string.split(separator)
+}
+
+// Companion object to Tokenizer trait
+object Tokenizer extends Logging {
+  def apply(): Tokenizer = apply("\\s")
+  def apply(separator: String): Tokenizer = new DefaultTokenizer(separator)
+}
+. . .
+val tokenizer = Tokenizer(",") // Calling an object invokes its apply() method
+println(tokenizer.tokenize("a,b,c")) // prints: WrappedArray(a, b, c)```
 
 Traits, objects and classes can nest freely:
 
@@ -924,6 +944,29 @@ Traits, objects and classes can nest freely:
 
 Overall, Scala programming revolves mostly around traits and objects. Classes are
 more commonly used to hold immutable data in the form of _case classes_.
+
+Finally, variables can be adscribed to multiple traits at instantiation:
+
+```scala
+val spellChecker = new SpellChecker
+  with FileDictionaryBuilder
+  with FileNGram2WordBuilder
+  with LuceneSimilarityScorer
+```
+
+This is a case of trait composition also called the _cake pattern_. Here,
+`SpellChecker` is a trait requiring traits `DictionaryBuilder`, `NGram2WordBuilder`
+and `SimilarityScorer`.
+
+Each of these required traits can have multiple implementations. For instance,
+a `DictionaryBuilder` can build a dictionary from a filesystem text file
+(`FileDictionaryBuilder`) or from a database table (`JDBCDictionaryBuilder`).
+Likewise, a `SimilarityScore` can use Apache Lucene's library (`LuceneSimilarityScorer`)
+or possibly the LingPipe library (`LingPipeSimilarityScorer`.)
+
+The specific "recipe" of trait implementations is specified upon creating the
+`SpellChecker` instance. Much better than Java-style dependency injection!
+
 
 ### Traits, Objects and Classes: an Example ###
 
