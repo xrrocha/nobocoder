@@ -828,10 +828,10 @@ object URLFetcher extends App with Timer with Logger {
 ```
 
 When we run this application we see, in addition to the URL contents, a trailing
-line like the following:
+stderr line like the following:
 
 ```
-[2014-03-16 07:57:44] Elapsed time: 846 milliseconds
+[2014-03-16 07:57:44] Elapsed time: 48 milliseconds
 ```
 
 
