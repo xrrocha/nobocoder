@@ -821,13 +821,13 @@ and expressions with type information. The Scala compiler is capable of inferrin
 appropriate type of most expressions thus providing the best of both worlds: the economy
 of expression of scripting languages with the type safety of industrial-strength programming languages.
 
-### Classes, Traits and Objects ###
+### Traits, Objects and Classes ###
 
 Scala classes correspond closely to the notion of class in most object-oriented classes:
-a class groups together data fields and functions (methods.) Classes, however, are less 
+they group together fields and functions (methods.) Classes, however, are less 
 central to Scala programming than they are in other object-oriented languages.
 
-Like in Java, a class can extend at most one other class. Class inheritance, however, is
+Like in Java, a class can extend at most one other class. Class inheritance, though, is
 far less common in Scala than in other object-oriented languages; more commonly classes
 extend traits.
  
@@ -837,7 +837,7 @@ to be extended by other traits, classes or objects.
 
 While a Scala class can extend at most one other class, it can (and often does) extend
 multiple traits. Because traits can carry method and field implementations some people see
-this as a form of multiple inheritance but that would be somewhat mistaken. Traits are
+this as multiple inheritance but that may not be entirely accurate. Traits are
 probably closer to Ruby or Python [mixins](http://en.wikipedia.org/wiki/Mixin): they're
 meant for _composition_ rather than inheritance.
 
@@ -845,8 +845,7 @@ In addition to classes and traits, Scala also features _objects_: stand-alone in
 possibly extending a class and/or one or more traits.
 
 Objects can have fields and methods of their own in addition to those possibly inherited
-by their extended traits or class. In this regard, a Scala object is comparable to a
-Haskell module.
+from their extended traits or class. Because of this, a Scala object can be viewed as a _module_ (for example, in the Haskell sense of the term).
 
 When an object has the same name of a class or trait it's dubbed their _companion object_.
 A companion object doesn't have to extend its associated class or trait (though it may.)
@@ -856,7 +855,7 @@ be called _static methods_.
 Overall, Scala programming revolves mostly around traits and objects. Classes are
 more commonly used to hold immutable data in the form of _case classes_.
 
-### Classes, Traits and Objects: an Example ###
+### Traits, Objects and Classes: an Example ###
 
 Let's consider a command-line application to grab the contents of a URL and transcribe
 it to the standard output: a `cat`-like command to display URL's.
