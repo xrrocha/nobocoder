@@ -608,6 +608,34 @@ val similars = dictionary.
   map(_._1) // Produce only first tuple element (word)
 ```
 
+### A Word on Tuples ##
+
+A _tuple_ is a group of unnamed values possibly with different data types:
+
+```scala
+val score: (String, String, Float) = ("herre", "here", 0.8)
+```
+
+In the above snippet we have:
+
+```scala
+map(word => (word, levenshtein.getDistance(term, word))). // Build tuple (word, similarity)
+```
+
+The expression `(word, levenshtein.getDistance(term, word))` defines a 2-element
+tuple where the first element is a `String` (the dictionary word) and the second
+element is a `Float` (the Levenshtein distance between the dictionary word and
+the unknown term).
+
+Scala tuple members are referenced positionally with an underscore followed by
+the position:
+
+```scala
+val wordSimilarity = ("herre", 0.8)
+println(wordSimilarity._1) // prints: here
+println(wordSimilarity._2) // prints: 0.8
+```
+
 ### Concatenating Collections ###
 
 Lastly, let's modify the printing of spelling suggestions to format the ordered set of
@@ -637,10 +665,9 @@ val literaryNumbers = Seq(22, 42, 69)
 literaryNumbers.mkString("{", ", ", "}") // yields: {22, 42, 69}
 ```
 
-### The Idiomatic Script ###
+### Are We There Yet? ###
 
-Uff! We've had a rather long journey to make our humble script more idiomatic. Let's take
-a look at our revised, final version:
+Let's take a look at our revised version so far:
 
 ```scala
 val dictionary = io.Source.fromFile("files/words.txt").getLines.toSet
@@ -661,6 +688,96 @@ val suggestions = terms.
 
     (term, similars)
   }
+
+suggestions foreach { case(term, similars) =>
+  if (similars.isEmpty)
+    println(s"Whaddaya mean '$term'?")
+  else
+    println(s"$term: you probably meant one of ${similars.mkString("(", ", ", ")")}")
+}
+```
+
+Almost there...
+
+### Monadic `for` ###
+
+A pipeline of collection transformations can quickly grow hard to read and reason
+about as the data flowing between steps is unnamed and each step's data datype changes
+as the transformation progresses.
+
+Scala provides sweet syntactic sugar for successive collection transformations: the
+_monadic `for`_.
+
+Let's recall how we currently build our suggestions to yield a sequence of tuples
+containing an unknown term and its similar dictionary words:
+
+```scala
+val suggestions = terms.
+  filterNot(dictionary.contains).
+  map { term =>
+    val similars = dictionary.toSeq.
+      map(word => (word, levenshtein.getDistance(term, word))).
+      filter(_._2 >= minSimilarity).
+      sortBy(-_._2).
+      map(_._1)
+
+    (term, similars)
+  }
+```
+
+Let's rephrase this transformation as a monadic `for`:
+
+```scala
+val suggestions = for {
+  term <- terms
+  if !(dictionary contains term)
+  similars = {
+    val wordSimilarities = for {
+      word <- dictionary.toSeq
+      similarity = levenshtein.getDistance(term, word)
+      if similarity >= minSimilarity
+    } yield (word, similarity)
+    for {
+      (word, similarity) <- wordSimilarities.sortBy(-_._2)
+    } yield word
+  }
+} yield (term, similars)
+```
+
+Each step is now named and we could even annotate it with type information for
+clarity.
+
+It's very important to understand that, behind the scenes, a `for` loop still makes
+use of `filter`, `map` and other collection functions. It can be thought of as a
+DSL for functional collection transformations.
+
+### The Final Idiomatic Script ###
+
+Uff! We've had a rather long journey to make our humble script idiomatic. Let's
+see what we got:
+
+```scala
+val dictionary = io.Source.fromFile("files/words.txt").getLines.toSet
+
+val minSimilarity = 0.75
+val levenshtein = new org.apache.lucene.search.spell.LevensteinDistance
+
+val terms = Seq("good", "word", "here", "badd", "wurd", "herre", "notaword")
+
+val suggestions = for {
+  term <- terms
+  if !(dictionary contains term)
+  similars = {
+    val wordSimilarities = for {
+      word <- dictionary.toSeq
+      similarity = levenshtein.getDistance(term, word)
+      if similarity >= minSimilarity
+    } yield (word, similarity)
+    for {
+      (word, similarity) <- wordSimilarities.sortBy(-_._2)
+    } yield word
+  }
+} yield (term, similars)
 
 suggestions foreach { case(term, similars) =>
   if (similars.isEmpty)
