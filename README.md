@@ -827,13 +827,33 @@ Scala classes correspond closely to the notion of class in most object-oriented 
 they group together fields and functions (methods.) Classes, however, are less 
 central to Scala programming than they are in other object-oriented languages.
 
+```scala
+class DateFormatter(pattern: String) {
+  val formatter = new java.text.SimpleDateFormat(pattern)
+  
+  def format(date: java.util.Date) = formatter.format(date);
+}
+```
+
 Like in Java, a class can extend at most one other class. Class inheritance, though, is
-far less common in Scala than in other object-oriented languages; more commonly classes
+far less common in Scala than in other object-oriented languages; more commonly, classes
 extend traits.
  
 A Scala _trait_ could be compared to a Java interface but it's a much more capable construct. Traits can have fields and method bodies as well as abstract members.
 Unlike classes, traits cannot be directly instantiated: traits exist solely
 to be extended by other traits, classes or objects.
+
+```scala
+trait Formatter[A] {
+  def format(a: A): String
+}
+
+class DateFormatter(pattern: String) extends Formatter[Date] {
+  val formatter = new SimpleDateFormat(pattern)
+  
+  def format(date: Date) = formatter.format(date);
+}
+```
 
 While a Scala class can extend at most one other class, it can (and often does) extend
 multiple traits. Because traits can carry method and field implementations some people see
@@ -841,16 +861,66 @@ this as multiple inheritance but that may not be entirely accurate. Traits are
 probably closer to Ruby or Python [mixins](http://en.wikipedia.org/wiki/Mixin): they're
 meant for _composition_ rather than inheritance.
 
+```scala
+// Logging is mixed-in to provide diagnostic messages
+class DateFormatter(pattern: String) extends Formatter[Date] with Logging {
+  val formatter = new SimpleDateFormat(pattern)
+  
+  def format(date: Date) = {
+    logger.debug(s"Formatting with pattern '$pattern': $date")
+    formatter.format(date);
+  }
+}
+```
+
 In addition to classes and traits, Scala also features _objects_: stand-alone instances
 possibly extending a class and/or one or more traits.
 
-Objects can have fields and methods of their own in addition to those possibly inherited
-from their extended traits or class. Because of this, a Scala object can be viewed as a _module_ (for example, in the Haskell sense of the term).
+```scala
+// This canonical example had to appear somewhere
+object Greeter extends App {
+  println("Hello world")
+}
+
+// Voicì un singleton
+object Capitalizer extends Formatter[String] {
+  def format(string: String) = string.toUpperCase
+}
+```
+
+Objects can have fields, methods and types of their own in addition to those possibly
+inherited from their extended traits or class. Because of this, a Scala object can be viewed as a _module_ (for example, in the Haskell sense of the term.)
+
+```scala
+object NGram {
+  // A datatype alias
+  type NGramMap = Map[String, Seq[String]]
+  
+  // A data class
+  case class Suggestion(unknownTerm: String, similarWords: Seq[String])
+  
+  // A function
+  def ngrams(string: String, length: Int = 2) = ...
+}
+. . .
+import NGram._
+
+val wordNGrams = ngrams("hello") // Equivalent to NGram.ngrams("hello", 2)
+val suggestion = Suggestion("herre", Seq("here", "her")) 
+```
 
 When an object has the same name of a class or trait it's dubbed their _companion object_.
 A companion object doesn't have to extend its associated class or trait (though it may.)
 Companion objects frequently provide functions similar to what in Java would
 be called _static methods_.
+
+```scala
+```
+
+Traits, objects and classes can nest freely:
+
+```scala
+```
 
 Overall, Scala programming revolves mostly around traits and objects. Classes are
 more commonly used to hold immutable data in the form of _case classes_.
