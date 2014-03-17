@@ -784,7 +784,7 @@ trait Timer {
 
 This trait defines a function `time` that:
 
-- takes as argument a code block returning a typed value, and
+- takes as argument a code block (`action`) returning a typed value, and
 - returns a tuple with the code block result and the elapsed time in milliseconds
 
 If we mix this trait into our application we have:
@@ -801,7 +801,7 @@ object URLFetcher extends App with Timer {
 }
 ```
 
-To log messages at different levels we need the following trait:
+To log messages with a timestamp we need the following trait:
 
 ```scala
 trait Logger {
