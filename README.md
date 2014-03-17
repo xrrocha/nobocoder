@@ -832,7 +832,7 @@ far less common in Scala than in other object-oriented languages; more commonly 
 extend traits.
  
 A Scala _trait_ could be compared to a Java interface but it's a much more capable construct. Traits can have fields and method bodies as well as abstract members.
-Unlike a class, however, a trait cannot be directly instantiated: traits exist solely
+Unlike classes, traits cannot be directly instantiated: traits exist solely
 to be extended by other traits, classes or objects.
 
 While a Scala class can extend at most one other class, it can (and often does) extend
@@ -843,6 +843,10 @@ meant for _composition_ rather than inheritance.
 
 In addition to classes and traits, Scala also features _objects_: stand-alone instances
 possibly extending a class and/or one or more traits.
+
+Objects can have fields and methods of their own in addition to those possibly inherited
+by their extended traits or class. In this regard, a Scala object is comparable to a
+Haskell module.
 
 When an object has the same name of a class or trait it's dubbed their _companion object_.
 A companion object doesn't have to extend its associated class or trait (though it may.)
