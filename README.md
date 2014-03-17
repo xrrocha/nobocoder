@@ -779,7 +779,7 @@ val suggestions = for {
   }
 } yield (term, similars)
 
-suggestions foreach { case(term, similars) =>
+for ((term, similars) <- suggestions) {
   if (similars.isEmpty)
     println(s"Whaddaya mean '$term'?")
   else
