@@ -953,13 +953,13 @@ val spellChecker = new SpellChecker
 ```
 
 This is a case of trait composition also called the _cake pattern_. Here,
-`SpellChecker` is a trait requiring traits `DictionaryBuilder`, `NGram2WordBuilder`
-and `SimilarityScorer`.
+`SpellChecker` is a trait expecting to be mixed with traits `DictionaryBuilder`,
+`NGram2WordBuilder` and `SimilarityScorer`.
 
 Each of these required traits can have multiple implementations. For instance,
-a `DictionaryBuilder` can build a dictionary from a filesystem text file
+a `DictionaryBuilder` can build an in-memory dictionary set from a filesystem text file
 (`FileDictionaryBuilder`) or from a database table (`JDBCDictionaryBuilder`).
-Likewise, a `SimilarityScore` can use Apache Lucene's library (`LuceneSimilarityScorer`)
+Likewise, a `SimilarityScorer` can use Apache Lucene's library (`LuceneSimilarityScorer`)
 or possibly the LingPipe library (`LingPipeSimilarityScorer`.)
 
 The specific "recipe" of trait implementations is specified upon creating the
