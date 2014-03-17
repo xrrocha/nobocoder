@@ -3,9 +3,9 @@
 ## Simple Spelling Suggestion in Scala ##
 
 This document describes a (rather simplistic) spelling suggestion algorithm
-and its evolving implementation in Scala. This implementation starts as an
-imperative solution -not unlike what one would write in, say, Java- and is
-subsequently modified towards a more functional, Scala-idiomatic style.
+and its evolving implementation in Scala. This implementation starts with a
+scripting formulation that is progressively modified towards a more functional,
+Scala-idiomatic style.
 
 ## Spelling Checking in a Nutshell ##
 
@@ -370,7 +370,7 @@ val terms = Seq("good", "word", "here", "badd", "wurd", "herre", "notaword")
 ```
 
 We won't be getting any output for the first 3 "good" words. We should get suggestions
-for the next 3 "bad" ones, as they do ressemble dictionary words. For the last "notaword"
+for the next 3 "bad" ones, as they do resemble dictionary words. For the last "notaword"
 term we should get an indication that no dictionary word is sufficiently similar.
 
 ### Locating Similar Words ###
@@ -632,7 +632,7 @@ the position:
 
 ```scala
 val wordSimilarity = ("herre", 0.8)
-println(wordSimilarity._1) // prints: here
+println(wordSimilarity._1) // prints: herre
 println(wordSimilarity._2) // prints: 0.8
 ```
 
@@ -661,7 +661,7 @@ The `mkString` function takes a collection and produces a string formed by the
 concatenation of all elements with a prefix, a separator and a suffix:
 
 ```scala
-val literaryNumbers = Seq(22, 42, 69)
+val literaryNumbers = Seq(22, 42, 69) // catch, hitchhiker, kamasutra
 literaryNumbers.mkString("{", ", ", "}") // yields: {22, 42, 69}
 ```
 
@@ -851,7 +851,7 @@ trait Formatter[A] {
 class DateFormatter(pattern: String) extends Formatter[Date] {
   val formatter = new SimpleDateFormat(pattern)
   
-  def format(date: Date) = formatter.format(date);
+  def format(date: Date) = formatter.format(date)
 }
 ```
 
@@ -862,22 +862,23 @@ probably closer to Ruby or Python [mixins](http://en.wikipedia.org/wiki/Mixin): 
 meant for _composition_ rather than inheritance.
 
 ```scala
-// Logging is mixed-in to provide diagnostic messages
+// Logging is mixed in to provide diagnostic messages
 class DateFormatter(pattern: String) extends Formatter[Date] with Logging {
   val formatter = new SimpleDateFormat(pattern)
   
   def format(date: Date) = {
-    logger.debug(s"Formatting with pattern '$pattern': $date")
-    formatter.format(date);
+    val result = formatter.format(date)
+    logger.debug(s"Using pattern '$pattern' result is: '$result'. Input: '$date'")
+    result
   }
 }
 ```
 
-In addition to classes and traits, Scala also features _objects_: stand-alone instances
+In addition to traits and classes, Scala also features _objects_: stand-alone instances
 possibly extending a class and/or one or more traits.
 
 ```scala
-// This canonical example had to appear somewhere
+// This canonical example had to appear somewhere ;-)
 object Greeter extends App {
   println("Hello world")
 }
@@ -908,13 +909,13 @@ object NGram {
 . . .
 import NGram._
 
-val wordNGrams = ngrams("hello") // Equivalent to NGram.ngrams("hello", 2)
+val wordNGrams = ngrams("hello") // Equivalent to NGram.ngrams("hello", 2)res
 val suggestion = Suggestion("herre", Seq("here", "her")) 
 ```
 >
 Note: As illustrated above, Scala traits, objects, classes and functions can nest freely
 
-When an object has the same name of a class or trait it's dubbed their _companion object_.
+When an object has the same name as a class or trait it's dubbed their _companion object_.
 A companion object doesn't have to extend its associated class or trait (though it may.)
 Companion objects frequently provide functions similar to what in Java would
 be called _static methods_.
@@ -941,7 +942,7 @@ val myTokenizer = Tokenizer(",") // Calling an object invokes its apply() method
 println(myTokenizer.tokenize("a,b,c")) // prints: WrappedArray(a, b, c)```
 ```
 
-Finally, variables can be adscribed to multiple traits at instantiation:
+Finally, variables can be adscribed to multiple traits at instantiation time:
 
 ```scala
 val spellChecker = new SpellChecker
