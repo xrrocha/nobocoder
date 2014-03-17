@@ -366,12 +366,18 @@ levenshtein.getDistance("nobocder", "novocoder") // yields: 0.8888889
 We then populate a list of test terms to exercise our suggestion approach:
 
 ```scala
-val terms = Seq("good", "word", "here", "badd", "wurd", "herre", "notaword")
+val terms = Seq(
+  "good", "word", "here",
+  "badd", "wurd", "herre",
+  "notaword")
 ```
 
-We won't be getting any output for the first 3 "good" words. We should get suggestions
-for the next 3 "bad" ones, as they do resemble dictionary words. For the last "notaword"
-term we should get an indication that no dictionary word is sufficiently similar.
+We won't be getting any output for the first 3 "good" words.
+
+We should get suggestions for the next 3 "bad" ones, as they do resemble dictionary words.
+
+For the last "notaword" term we should get an indication that no dictionary word is
+sufficiently similar.
 
 ### Locating Similar Words ###
 We're now ready to visit each term and test if it exists in the dictionary;
@@ -1068,7 +1074,7 @@ To log messages with a timestamp we need the following trait:
 
 ```scala
 trait Logger {
-  val dateFormat = new java.text.SimpleDateFormat("yyyy-MM-dd hh:mm:ss")
+  val dateFormat = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
 
   def log(message: String) {
     System.err.println(s"[${dateFormat.format(new java.util.Date)}] $message")
@@ -1076,7 +1082,7 @@ trait Logger {
 }
 ```
 
-After mixin this trait to our application we have:
+After mixing this trait to our application we have:
 
 ```scala
 object URLFetcher extends App with Timer with Logger {
