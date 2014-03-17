@@ -957,9 +957,10 @@ val spellChecker = new SpellChecker
   with LuceneSimilarityScorer
 ```
 
-This is a case of trait composition also called the _cake pattern_. Here,
-`SpellChecker` is a trait expecting to be mixed with traits `DictionaryBuilder`,
-`NGram2WordBuilder` and `SimilarityScorer`.
+This is a case of trait composition also called the _cake pattern_.
+
+Here, `SpellChecker` is a trait expecting to be mixed with types extending traits
+`DictionaryBuilder`, `NGram2WordBuilder` and `SimilarityScorer`.
 
 ![](img/SpellChecker.png)
 
@@ -979,7 +980,7 @@ more commonly used to hold immutable data in the form of _case classes_:
 case class PersonName(firstName: String, middleName: Option[String], lastName: String)
 ```
 
-### Traits, Objects and Classes: an Example ###
+### Traits and Objects: an Example ###
 
 Let's consider a command-line application to grab the contents of a URL and transcribe
 it to the standard output: a `cat`-like command to display URL's.
