@@ -836,7 +836,7 @@ class DateFormatter(pattern: String) {
 ```
 
 Like in Java, a class can extend at most one other class. Class inheritance, though, is
-far less common in Scala than in other object-oriented languages; more commonly, classes
+far less common in Scala than in other object-oriented languages; more often, classes
 extend traits.
  
 A Scala _trait_ could be compared to a Java interface but it's a much more capable construct. Traits can have fields and method bodies as well as abstract members.
