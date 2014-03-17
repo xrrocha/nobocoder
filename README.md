@@ -936,14 +936,12 @@ object Tokenizer extends Logging {
 . . .
 val tokenizer = Tokenizer(",") // Calling an object invokes its apply() method
 println(tokenizer.tokenize("a,b,c")) // prints: WrappedArray(a, b, c)```
+```
 
 Traits, objects and classes can nest freely:
 
 ```scala
 ```
-
-Overall, Scala programming revolves mostly around traits and objects. Classes are
-more commonly used to hold immutable data in the form of _case classes_.
 
 Finally, variables can be adscribed to multiple traits at instantiation:
 
@@ -967,6 +965,8 @@ or possibly the LingPipe library (`LingPipeSimilarityScorer`.)
 The specific "recipe" of trait implementations is specified upon creating the
 `SpellChecker` instance. Much better than Java-style dependency injection!
 
+Overall, Scala programming revolves mostly around traits and objects. Classes are
+more commonly used to hold immutable data in the form of _case classes_.
 
 ### Traits, Objects and Classes: an Example ###
 
