@@ -964,7 +964,11 @@ The specific "recipe" of trait implementations is specified upon creating the
 `SpellChecker` instance. Much better than Java-style dependency injection!
 
 Overall, Scala programming revolves mostly around traits and objects. Classes are
-more commonly used to hold immutable data in the form of _case classes_.
+more commonly used to hold immutable data in the form of _case classes_:
+
+```scala
+case class PersonName(firstName: String, middleName: Option[String], lastName: String)
+```
 
 ### Traits, Objects and Classes: an Example ###
 
