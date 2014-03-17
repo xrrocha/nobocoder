@@ -763,7 +763,8 @@ val dictionary = {
     for {
         line <- io.Source.fromFile("files/words.txt").getLines
         if !line.startsWith("#")
-    } yield line
+        word = line.toLowerCase
+    } yield word
 }.toSet
 ```
 
