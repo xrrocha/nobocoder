@@ -814,7 +814,7 @@ While scripting and exploratory programming are a wonderful way to sketch and re
 programming in the large benefits greatly from a rich type system and the organizing
 force of objects, traits and classes.
 
-Scala is a strongly-typed language with a type system significantly richer than that of Java,
+Scala is a strongly typed language with a type system significantly richer than that of Java,
 its ancestor in JVM-land. Yet, Scala code is strinkingly less verbose than Java. This is
 possible because -unlike Java- Scala doesn't require the programmer to annotate variables
 and expressions with type information. The Scala compiler is capable of inferring the
@@ -824,29 +824,33 @@ of expression of scripting languages with the type safety of industrial-strength
 ### Classes, Traits and Objects ###
 
 Scala classes correspond closely to the notion of class in most object-oriented classes:
-a class groups together data fields and functions (methods.)
+a class groups together data fields and functions (methods.) Classes, however, are less 
+central to Scala programming than they are in other object-oriented languages.
 
 Like in Java, a class can extend at most one other class. Class inheritance, however, is
-far less common in Scala than in other object-oriented languages; in most cases classes
+far less common in Scala than in other object-oriented languages; more commonly classes
 extend traits.
-
+ 
 A Scala _trait_ could be compared to a Java interface but it's a much more capable construct. Traits can have fields and method bodies as well as abstract members.
 Unlike a class, however, a trait cannot be directly instantiated: traits exist solely
 to be extended by other traits, classes or objects.
 
 While a Scala class can extend at most one other class, it can (and often does) extend
 multiple traits. Because traits can carry method and field implementations some people see
-this as multiple inheritance but that would be somewhat mistaken. Traits are probably
-closer to Ruby or Python [mixins](http://en.wikipedia.org/wiki/Mixin): they're meant for
-_composition_ rather than inheritance.
+this as a form of multiple inheritance but that would be somewhat mistaken. Traits are
+probably closer to Ruby or Python [mixins](http://en.wikipedia.org/wiki/Mixin): they're
+meant for _composition_ rather than inheritance.
 
 In addition to classes and traits, Scala also features _objects_: stand-alone instances
 possibly extending a class and/or one or more traits.
 
-When an object has the same name as a class or trait it's dubbed their _companion object_.
+When an object has the same name of a class or trait it's dubbed their _companion object_.
 A companion object doesn't have to extend its associated class or trait (though it may.)
-Companion objects, however, frequently provide functions similar to what in Java would
+Companion objects frequently provide functions similar to what in Java would
 be called _static methods_.
+
+Overall, Scala programming revolves mostly around traits and objects. Classes are
+more commonly used to hold immutable data in the form of _case classes_.
 
 ### Classes, Traits and Objects: an Example ###
 
