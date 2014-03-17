@@ -967,8 +967,9 @@ Here, `SpellChecker` is a trait expecting to be mixed with types extending trait
 Each of these required traits can have multiple implementations. For instance,
 a `DictionaryBuilder` can build an in-memory dictionary set from a filesystem text file
 `(FileDictionaryBuilder)` or from a database table `(JDBCDictionaryBuilder)`.
-Likewise, a `SimilarityScorer` can use Apache Lucene's library `(LuceneSimilarityScorer)`
-or possibly the LingPipe library `(LingPipeSimilarityScorer)`
+Likewise, a `SimilarityScorer` can based on Apache's Lucene library
+`(LuceneSimilarityScorer)` or possibly on the LingPipe library
+`(LingPipeSimilarityScorer)`
 
 The specific "recipe" of trait implementations is specified upon creating the
 `SpellChecker` instance. Much better than Java-style dependency injection!
