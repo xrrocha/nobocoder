@@ -911,6 +911,8 @@ import NGram._
 val wordNGrams = ngrams("hello") // Equivalent to NGram.ngrams("hello", 2)
 val suggestion = Suggestion("herre", Seq("here", "her")) 
 ```
+>
+Note: As illustrated above, Scala traits, objects, classes and functions can nest freely
 
 When an object has the same name of a class or trait it's dubbed their _companion object_.
 A companion object doesn't have to extend its associated class or trait (though it may.)
@@ -918,8 +920,6 @@ Companion objects frequently provide functions similar to what in Java would
 be called _static methods_.
 
 ```scala
-import com.typesafe.scalalogging.slf4j.Logging
-
 trait Tokenizer {
   def tokenize(string: String): Seq[String]
 }
@@ -930,17 +930,15 @@ class DefaultTokenizer(separator: String) extends Tokenizer {
 
 // Companion object to Tokenizer trait
 object Tokenizer extends Logging {
-  def apply(): Tokenizer = apply("\\s")
+  def apply(): Tokenizer = {
+    logger.debug("Using default separator")
+    apply("\\s")
+  }
   def apply(separator: String): Tokenizer = new DefaultTokenizer(separator)
 }
 . . .
-val tokenizer = Tokenizer(",") // Calling an object invokes its apply() method
-println(tokenizer.tokenize("a,b,c")) // prints: WrappedArray(a, b, c)```
-```
-
-Traits, objects and classes can nest freely:
-
-```scala
+val myTokenizer = Tokenizer(",") // Calling an object invokes its apply() method
+println(myTokenizer.tokenize("a,b,c")) // prints: WrappedArray(a, b, c)```
 ```
 
 Finally, variables can be adscribed to multiple traits at instantiation:
@@ -958,9 +956,9 @@ This is a case of trait composition also called the _cake pattern_. Here,
 
 Each of these required traits can have multiple implementations. For instance,
 a `DictionaryBuilder` can build an in-memory dictionary set from a filesystem text file
-(`FileDictionaryBuilder`) or from a database table (`JDBCDictionaryBuilder`).
-Likewise, a `SimilarityScorer` can use Apache Lucene's library (`LuceneSimilarityScorer`)
-or possibly the LingPipe library (`LingPipeSimilarityScorer`.)
+`(FileDictionaryBuilder)` or from a database table `(JDBCDictionaryBuilder)`.
+Likewise, a `SimilarityScorer` can use Apache Lucene's library `(LuceneSimilarityScorer)`
+or possibly the LingPipe library `(LingPipeSimilarityScorer)`
 
 The specific "recipe" of trait implementations is specified upon creating the
 `SpellChecker` instance. Much better than Java-style dependency injection!

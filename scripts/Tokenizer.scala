@@ -9,7 +9,10 @@ class DefaultTokenizer(separator: String) extends Tokenizer {
 }
 
 object Tokenizer extends Logging {
-  def apply(): Tokenizer = apply("\\s")
+  def apply(): Tokenizer = {
+    logger.debug("Using default separator")
+    apply("\\s")
+  }
   def apply(separator: String): Tokenizer = new DefaultTokenizer(separator)
 }
 
