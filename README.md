@@ -264,7 +264,7 @@ val suggestions: Seq[String] =
   map(_._1) // extract only the word, leaving out the similarity score
 ```
 
-Don't worry about the seemingly cryptic syntax; as we advance in our presentation
+Don't worry about the seemingly cryptic syntax; as we progress in our presentation
 things will fall neatly into place.
 
 For now, note how compact the suggestion compilation logic looks thanks to Scala's
