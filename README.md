@@ -744,8 +744,28 @@ val suggestions = for {
 } yield (term, similars)
 ```
 
-Each step is now named and we could even annotate it with type information for
-clarity.
+This is definitely an improvement over long transformation one-liners: each step
+is now named and we could even annotate it with type information for clarity.
+
+In practice, small transformations are frequently easier to write and read with the
+"method chaining" notation. As an example, consider building the dictionary set from
+a disk file:
+
+```scala
+val dictionary = io.Source.fromFile("files/words.txt").getLines.toSet
+```
+
+However, if we were to weed out commented lines and making sure everything is lowercase
+we'd probably use a mix of `for` notation and method chaining:
+
+```scala
+val dictionary = {
+    for {
+        line <- io.Source.fromFile("files/words.txt").getLines
+        if !line.startsWith("#")
+    } yield line
+}.toSet
+```
 
 It's very important to understand that, behind the scenes, a `for` loop still makes
 use of `filter`, `map` and other collection functions. It can be thought of as a
