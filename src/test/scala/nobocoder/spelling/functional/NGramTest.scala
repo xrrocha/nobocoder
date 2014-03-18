@@ -2,27 +2,23 @@ package nobocoder.spelling.functional
 
 import org.scalatest.FunSuite
 
-class NGramBuilderTest extends FunSuite {
-
-  val ngramBuilder = new NGramBuilder {
-    override val ngramLength = 3
-  }
-
+class NGramTest extends FunSuite {
   test("Builds ngrams for single word") {
-    assert(ngramBuilder.ngrams("nobocoder") == Seq("nob", "obo", "boc", "oco", "cod", "ode", "der"))
+    assert(NGram.ngrams("nobocoder", 3) == Seq("nob", "obo", "boc", "oco", "cod", "ode", "der"))
   }
 
   test("Builds ngrams for multiple words") {
-    assert(ngramBuilder.ngrams("nobocoder rocks") == Seq("nob", "obo", "boc", "oco", "cod", "ode", "der", "roc", "ock", "cks"))
+    assert(NGram.ngrams("nobocoder rocks") == Seq("nob", "obo", "boc", "oco", "cod", "ode", "der", "roc", "ock", "cks"))
   }
 
   test("Drops ngrams smaller than length") {
-    assert(ngramBuilder.ngrams("no bo coder") == Seq("cod", "ode", "der"))
+    assert(NGram.ngrams("no bo coder") == Seq("cod", "ode", "der"))
   }
 }
 
 class WordListNGramMapBuilderTest extends FunSuite {
-  val ngramMapBuilder = new WordListNGramMapBuilder {
+  val ngramMapBuilder = new WordListNGram2WordBuilder {
+    override val ngramLength = 3
     val wordList = Seq("nobocoder", "is", "coders", "at", "work")
   }
 
@@ -40,12 +36,12 @@ class WordListNGramMapBuilderTest extends FunSuite {
         "ork" -> Seq("work"),
         "wor" -> Seq("work")
       )
-    assert(ngramMapBuilder.buildNGramMap == expectedNGramMap)
+    assert(ngramMapBuilder.buildNGram2Word == expectedNGramMap)
   }
 }
 
 class LineNGramMapBuilderTest extends FunSuite {
-  val ngramMapBuilder = new LineNGramMapBuilder {
+  val ngramMapBuilder = new LineNGram2WordBuilder {
     val lines = Seq(
       "boc\tnobocoder",
       "cod\tcoders,nobocoder",
@@ -73,7 +69,7 @@ class LineNGramMapBuilderTest extends FunSuite {
         "ork" -> Seq("work"),
         "wor" -> Seq("work"))
 
-    assert(ngramMapBuilder.buildNGramMap == expectedNGramMap)
+    assert(ngramMapBuilder.buildNGram2Word == expectedNGramMap)
   }
 }
 

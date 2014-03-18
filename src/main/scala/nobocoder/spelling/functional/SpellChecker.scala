@@ -11,22 +11,23 @@ trait SpellChecker {
       mapValues(_.get)
 }
 
-trait NGramSpellChecker extends  SpellChecker with NGramMapBuilder {
-  def minSimilarity: Double
-  def scoreSimilarity(s1: String, s2: String): Double
+trait NGramSpellChecker extends SpellChecker { this: DictionaryBuilder with NGram2WordBuilder with StringDistance  =>
+  import NGram._
 
-  lazy val ngram2Word = buildNGramMap
-  lazy val words: Set[String] = ngram2Word.values.flatten.toSet
+  def minSimilarity: Double
+
+  lazy val ngram2Word = buildNGram2Word
+  lazy val dictionary = buildDictionary
 
   def suggestionsFor(word: String): Option[Seq[String]] =
-    if (words contains word) None
+    if (dictionary contains word) None
     else Some {
-      ngrams(word).
+      ngrams(word, 2).
         filter(ngram2Word.contains).
         flatMap(ngram2Word).
         distinct.
         map { candidate =>
-          (candidate, scoreSimilarity(candidate, word))
+          (candidate, distance(candidate, word))
         }.
         filter(_._2 >= minSimilarity).
         sortBy(-_._2).

@@ -3,20 +3,24 @@ package nobocoder.spelling.functional
 import org.scalatest.FunSuite
 import org.apache.lucene.search.spell.JaroWinklerDistance
 
-class SpellCheckerTest extends FunSuite {
+class NGramSpellCheckerTest extends FunSuite {
 
-  val spellChecker = new NGramSpellChecker with WordListNGramMapBuilder {
-    lazy val wordList = Seq("nobocoder", "is", "coders", "at", "work")
-
-    override val ngramLength = 2
+  val spellChecker = new NGramSpellChecker
+    with WordListDictionaryBuilder
+    with WordListNGram2WordBuilder
+    with LuceneStringDistance
+  {
+    lazy val lines = Seq("nobocoder", "is", "coders", "at", "work")
+    lazy val wordList = lines
 
     val minSimilarity = .84
-    val jaro = {
+    val stringDistance = {
       val distance = new JaroWinklerDistance
       distance.setThreshold(-1)
       distance
     }
-    def scoreSimilarity(s1: String, s2: String) = jaro.getDistance(s1, s2)
+
+    println(buildNGram2Word)
   }
 
   test("Suggests nothing for existing words") {

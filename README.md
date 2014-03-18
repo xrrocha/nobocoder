@@ -524,7 +524,7 @@ concept. Let's recall the classic, sales-pitch Unix example:
 ```bash
 cat *.txt |  # Collect the text files
 tr A-Z a-z |  # Make all words lowercase
-tr -cs a-z '\012' |  # Remove non-alphas, outputting each word on a separate line
+tr -cs a-z '\n' |  # Remove non-alphas, outputting each word on a separate line
 sort -u -o dictionary.txt  # Order by word -suppressing duplicates- onto dictionary file
 ```
 

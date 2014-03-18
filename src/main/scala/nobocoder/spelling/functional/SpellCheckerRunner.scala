@@ -1,31 +1,22 @@
 package nobocoder.spelling.functional
 
-import org.apache.lucene.search.spell.{JaroWinklerDistance, LevensteinDistance, StringDistance}
 import com.typesafe.scalalogging.slf4j.Logging
 
-class SimpleSpellChecker(
-    val wordList: Iterable[String],
-    val stringDistance: StringDistance,
-    val minSimilarity: Double,
-    override val ngramLength: Int = 2)
-  extends NGramSpellChecker with WordListNGramMapBuilder
-{
-  def scoreSimilarity(s1: String, s2: String) = stringDistance.getDistance(s1, s2)
-}
-
 object SpellCheckerRunner extends App with Logging {
-  val spellChecker = new SimpleSpellChecker(
-    wordList       = io.Source.fromFile("files/words.txt").getLines.toIterable,
-    minSimilarity  = .725,
-    ngramLength    = 2,
-    stringDistance = {
-      val distance = new LevensteinDistance
-      //distance.setThreshold(-1)
-      distance
-    }
-  )
+  val spellChecker = new NGramSpellChecker
+    with WordFileDictionaryBuilder
+    with WordListNGram2WordBuilder
+    with LuceneStringDistance
+  {
+    val minSimilarity = 0.75
+    val stringDistance = new org.apache.lucene.search.spell.LevensteinDistance
+
+    lazy val wordList = dictionary
+    val filename = "files/words.txt"
+  }
 
   logger.debug(s"args: ${args.mkString(" ")}")
+
   spellChecker.suggestionsFor(args).
     foreach { case (word, suggestions) =>
       println(s"$word: ${suggestions.mkString(",")}")
