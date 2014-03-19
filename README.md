@@ -712,10 +712,10 @@ Almost there...
 ### Monadic `for` ###
 
 A pipeline of collection transformations can quickly grow hard to read and reason
-about as the data flowing between steps is unnamed and each step's data datype changes
+about as the data flowing between steps is unnamed and each step's data type changes
 as the transformation progresses.
 
-Scala provides sweet syntactic sugar for successive collection transformations: the
+Scala provides sweet syntactic sugar for collection transformations: the
 _monadic `for`_.
 
 Let's recall how we currently build our suggestions to yield a sequence of tuples
