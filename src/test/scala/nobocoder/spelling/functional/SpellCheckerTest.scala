@@ -10,8 +10,8 @@ class NGramSpellCheckerTest extends FunSuite {
     with WordListNGram2WordBuilder
     with LuceneStringDistance
   {
-    lazy val lines = Seq("nobocoder", "is", "coders", "at", "work")
-    lazy val wordList = lines
+    lazy val wordLines = Seq("nobocoder", "is", "coders", "at", "work")
+    lazy val wordList = wordLines
 
     val minSimilarity = .84
     val stringDistance = {

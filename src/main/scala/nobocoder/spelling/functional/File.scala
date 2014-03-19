@@ -1,7 +1,5 @@
 package nobocoder.spelling.functional
 
-trait FileSource {
-  def filename: String
-
-  def lines: Iterable[String] = io.Source.fromFile(filename).getLines.toIterable
+object FileSource {
+  def lines(filename: String): Iterable[String] = io.Source.fromFile(filename).getLines.toIterable
 }

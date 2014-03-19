@@ -1,18 +1,40 @@
 package nobocoder.spelling.functional
 
 import com.typesafe.scalalogging.slf4j.Logging
+import java.io.File
 
 object SpellCheckerRunner extends App with Logging {
+  val wordFilename = "files/words.txt"
+  val words = FileSource.lines(wordFilename)
+
+  val ngram2wordFilename = "files/ngram2word.txt"
+  val ngram2words = if (new File(ngram2wordFilename).exists()) {
+    val builder = new LineNGram2WordBuilder {
+      val ngramLines = FileSource.lines(ngram2wordFilename)
+    }
+
+    val ngram2words = builder.buildNGram2Word
+    LineNGram2WordBuilder.save(ngram2words, ngram2wordFilename)
+
+    ngram2words
+  } else {
+    val builder = new WordListNGram2WordBuilder {
+      val wordList = words
+    }
+    builder.buildNGram2Word
+  }
+
   val spellChecker = new NGramSpellChecker
-    with WordFileDictionaryBuilder
-    with WordListNGram2WordBuilder
+    with WordListDictionaryBuilder
+    with NGram2WordBuilder
     with LuceneStringDistance
   {
     val minSimilarity = 0.75
     val stringDistance = new org.apache.lucene.search.spell.LevensteinDistance
 
-    lazy val wordList = dictionary
-    val filename = "files/words.txt"
+    lazy val wordLines = SpellCheckerRunner.words
+
+    override lazy val buildNGram2Word = SpellCheckerRunner.ngram2words
   }
 
   logger.debug(s"args: ${args.mkString(" ")}")

@@ -3,7 +3,7 @@ package nobocoder.spelling.functional
 import java.io.{FileWriter, PrintWriter}
 
 object NGram {
-  def ngrams(string: String, ngramLength: Int = 3): Seq[String] =
+  def ngrams(string: String, ngramLength: Int): Seq[String] =
     string.
       trim.
       toLowerCase.
@@ -32,15 +32,11 @@ trait WordListNGram2WordBuilder extends NGram2WordBuilder {
       mapValues(_.map(_._2).toSeq.sorted)
 }
 
-trait WordFileNGram2WordBuilder extends WordListNGram2WordBuilder with FileSource {
-  def wordList = lines
-}
-
 trait LineNGram2WordBuilder extends NGram2WordBuilder {
-  def lines: Iterable[String]
+  def ngramLines: Iterable[String]
 
   def buildNGram2Word: Map[String, Seq[String]] =
-    lines
+    ngramLines
       .map { line =>
         val Array(ngram, words) = line.split("\t")
         ngram -> words.split(",").toSeq
@@ -58,5 +54,3 @@ object LineNGram2WordBuilder {
     out.flush()
   }
 }
-
-trait FileLineNGram2WordBuilder extends LineNGram2WordBuilder with FileSource

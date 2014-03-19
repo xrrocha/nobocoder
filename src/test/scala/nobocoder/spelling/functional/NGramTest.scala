@@ -8,11 +8,11 @@ class NGramTest extends FunSuite {
   }
 
   test("Builds ngrams for multiple words") {
-    assert(NGram.ngrams("nobocoder rocks") == Seq("nob", "obo", "boc", "oco", "cod", "ode", "der", "roc", "ock", "cks"))
+    assert(NGram.ngrams("nobocoder rocks", 3) == Seq("nob", "obo", "boc", "oco", "cod", "ode", "der", "roc", "ock", "cks"))
   }
 
   test("Drops ngrams smaller than length") {
-    assert(NGram.ngrams("no bo coder") == Seq("cod", "ode", "der"))
+    assert(NGram.ngrams("no bo coder", 3) == Seq("cod", "ode", "der"))
   }
 }
 
@@ -42,7 +42,7 @@ class WordListNGramMapBuilderTest extends FunSuite {
 
 class LineNGramMapBuilderTest extends FunSuite {
   val ngramMapBuilder = new LineNGram2WordBuilder {
-    val lines = Seq(
+    val ngramLines = Seq(
       "boc\tnobocoder",
       "cod\tcoders,nobocoder",
       "der\tcoders,nobocoder",

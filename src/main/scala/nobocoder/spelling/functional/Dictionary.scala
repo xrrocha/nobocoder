@@ -5,14 +5,12 @@ trait DictionaryBuilder {
 }
 
 trait WordListDictionaryBuilder extends DictionaryBuilder {
-  def lines: Iterable[String]
+  def wordLines: Iterable[String]
 
   def buildDictionary: Set[String] =
-    lines.
+    wordLines.
       flatMap { word =>
-      word.split("\\s+").map(_.trim.toLowerCase)
-    }.
+        word.split("\\s+").map(_.trim.toLowerCase)
+      }.
       toSet
 }
-
-trait WordFileDictionaryBuilder extends WordListDictionaryBuilder with FileSource
