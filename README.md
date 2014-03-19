@@ -955,10 +955,18 @@ println(myTokenizer.tokenize("a,b,c")) // prints: WrappedArray(a, b, c)```
 Finally, variables can be adscribed to multiple traits at instantiation time:
 
 ```scala
-val spellChecker = new SpellChecker
-  with FileDictionaryBuilder
-  with FileNGram2WordBuilder
-  with LuceneSimilarityScorer
+val spellChecker = new NGramSpellChecker
+  with WordListDictionaryBuilder
+  with LineNGram2WordBuilder
+  with LuceneStringDistance
+{
+  val minSimilarity = 0.75
+  val stringDistance = new org.apache.lucene.search.spell.LevensteinDistance
+
+  lazy val wordList = FileSource.lines(wordFilename)
+
+  lazy val ngramLines = FileSource.lines(ngram2wordFilename)
+}
 ```
 
 This is a case of trait composition also called the _cake pattern_.
@@ -970,9 +978,9 @@ Here, `SpellChecker` is a trait expecting to be mixed with subtypes of
 
 Each of these required traits can have multiple implementations. For instance
 
-- a `DictionaryBuilder` can build an in-memory dictionary set from
-  * a filesystem text file `(FileDictionaryBuilder)`
-  * a database table `(JDBCDictionaryBuilder)`
+- an `NGram2WordBuilder` can build an in-memory dictionary map of bigrams to words from
+  * a list of words `(WordListNGram2WordBuilder)`
+  * a list of bigram/words pairs `(LineNGram2WordBuilder)`
 - a `SimilarityScorer` can be based on
   * Apache's Lucene library `(LuceneSimilarityScorer)` 
   * LingPipe library `(LingPipeSimilarityScorer)`
