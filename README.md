@@ -971,8 +971,8 @@ val spellChecker = new NGramSpellChecker
 
 This is a case of trait composition also called the _cake pattern_.
 
-Here, `SpellChecker` is a trait expecting to be mixed with subtypes of
-`DictionaryBuilder`, `NGram2WordBuilder` and `SimilarityScorer`.
+Here, `NGramSpellChecker` is a trait expecting to be mixed with subtypes of
+`DictionaryBuilder`, `NGram2WordBuilder` and `StringDistance`.
 
 ![](img/SpellChecker.png)
 
@@ -980,8 +980,8 @@ Each of these required traits can have multiple implementations. For instance
 
 - an `NGram2WordBuilder` can build an in-memory dictionary map of bigrams to words from
   * a list of words `(WordListNGram2WordBuilder)`
-  * a list of bigram/words pairs `(LineNGram2WordBuilder)`
-- a `SimilarityScorer` can be based on
+  * a list of bigram/words lines `(LineNGram2WordBuilder)`
+- a `SimilarityScorer` could be implemented on top of
   * Apache's Lucene library `(LuceneSimilarityScorer)` 
   * LingPipe library `(LingPipeSimilarityScorer)`
 
