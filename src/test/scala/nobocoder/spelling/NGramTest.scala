@@ -1,4 +1,4 @@
-package nobocoder.spelling.functional
+package nobocoder.spelling
 
 import org.scalatest.FunSuite
 
@@ -19,7 +19,7 @@ class NGramTest extends FunSuite {
 class WordListNGramMapBuilderTest extends FunSuite {
   val ngramMapBuilder = new WordListNGram2WordBuilder {
     override val ngramLength = 3
-    val wordList = Seq("nobocoder", "is", "coders", "at", "work")
+    val ngramWordList = Seq("nobocoder", "is", "coders", "at", "work")
   }
 
   test("Builds ngram map") {

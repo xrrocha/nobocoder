@@ -1,4 +1,4 @@
-package nobocoder.spelling.scripting
+package nobocoder.util
 
 import io.Source
 

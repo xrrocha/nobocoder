@@ -1,4 +1,4 @@
-package nobocoder.spelling.functional
+package nobocoder.spelling
 
 import java.io.{FileWriter, PrintWriter}
 
@@ -19,12 +19,12 @@ trait NGram2WordBuilder {
 
 trait WordListNGram2WordBuilder extends NGram2WordBuilder {
   val ngramLength = 2
-  def wordList: Iterable[String]
+  def ngramWordList: Iterable[String]
 
   import NGram._
 
   def buildNGram2Word: Map[String, Seq[String]] =
-    wordList.
+    ngramWordList.
       flatMap { word =>
         ngrams(word, ngramLength).map(ngram => (ngram, word))
       }.

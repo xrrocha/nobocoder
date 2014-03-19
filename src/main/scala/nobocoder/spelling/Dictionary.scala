@@ -1,14 +1,14 @@
-package nobocoder.spelling.functional
+package nobocoder.spelling
 
 trait DictionaryBuilder {
   def buildDictionary: Set[String]
 }
 
 trait WordListDictionaryBuilder extends DictionaryBuilder {
-  def wordLines: Iterable[String]
+  def wordList: Iterable[String]
 
   def buildDictionary: Set[String] =
-    wordLines.
+    wordList.
       flatMap { word =>
         word.split("\\s+").map(_.trim.toLowerCase)
       }.

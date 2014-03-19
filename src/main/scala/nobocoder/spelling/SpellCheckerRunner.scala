@@ -1,25 +1,12 @@
-package nobocoder.spelling.functional
+package nobocoder.spelling
 
 import com.typesafe.scalalogging.slf4j.Logging
 import java.io.File
+import nobocoder.util.FileSource
 
 trait SpellCheckerRunnerEnv {
   val wordFilename = "files/words.txt"
   val ngram2wordFilename = "files/ngram2word.txt"
-}
-
-object SpellCheckerPreparer extends App with SpellCheckerRunnerEnv {
-  prepareNGram2WordFile()
-
-  def prepareNGram2WordFile() {
-    val builder = new WordListNGram2WordBuilder {
-      val wordList = FileSource.lines(wordFilename)
-    }
-
-    val ngramMap = builder.buildNGram2Word
-
-    LineNGram2WordBuilder.save(ngramMap, ngram2wordFilename)
-  }
 }
 
 object SpellCheckerRunner extends App with SpellCheckerRunnerEnv with Logging {
@@ -36,7 +23,7 @@ object SpellCheckerRunner extends App with SpellCheckerRunnerEnv with Logging {
     val minSimilarity = 0.75
     val stringDistance = new org.apache.lucene.search.spell.LevensteinDistance
 
-    lazy val wordLines = FileSource.lines(wordFilename)
+    lazy val wordList = FileSource.lines(wordFilename)
 
     lazy val ngramLines = FileSource.lines(ngram2wordFilename)
   }
@@ -47,4 +34,18 @@ object SpellCheckerRunner extends App with SpellCheckerRunnerEnv with Logging {
     foreach { case (word, suggestions) =>
       println(s"$word: ${suggestions.mkString(",")}")
     }
+}
+
+object SpellCheckerPreparer extends App with SpellCheckerRunnerEnv {
+  prepareNGram2WordFile()
+
+  def prepareNGram2WordFile() {
+    val builder = new WordListNGram2WordBuilder {
+      val ngramWordList = FileSource.lines(wordFilename)
+    }
+
+    val ngramMap = builder.buildNGram2Word
+
+    LineNGram2WordBuilder.save(ngramMap, ngram2wordFilename)
+  }
 }

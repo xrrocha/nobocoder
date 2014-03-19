@@ -1,4 +1,4 @@
-package nobocoder.spelling.functional
+package nobocoder.spelling
 
 trait StringDistance {
   def distance(s1: String, s2: String): Double

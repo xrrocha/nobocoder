@@ -1,4 +1,4 @@
-package nobocoder.spelling.functional
+package nobocoder.spelling
 
 import org.scalatest.FunSuite
 import org.apache.lucene.search.spell.JaroWinklerDistance
@@ -10,8 +10,8 @@ class NGramSpellCheckerTest extends FunSuite {
     with WordListNGram2WordBuilder
     with LuceneStringDistance
   {
-    lazy val wordLines = Seq("nobocoder", "is", "coders", "at", "work")
-    lazy val wordList = wordLines
+    lazy val ngramWordList = Seq("nobocoder", "is", "coders", "at", "work")
+    lazy val wordList = ngramWordList
 
     val minSimilarity = .84
     val stringDistance = {
