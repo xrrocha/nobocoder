@@ -13,15 +13,14 @@ object SpellCheckerRunner extends App with Logging {
       val ngramLines = FileSource.lines(ngram2wordFilename)
     }
 
-    val ngram2words = builder.buildNGram2Word
-    LineNGram2WordBuilder.save(ngram2words, ngram2wordFilename)
-
-    ngram2words
+    builder.buildNGram2Word
   } else {
     val builder = new WordListNGram2WordBuilder {
       val wordList = words
     }
-    builder.buildNGram2Word
+    val ngramMap = builder.buildNGram2Word
+    LineNGram2WordBuilder.save(ngramMap, ngram2wordFilename)
+    ngramMap
   }
 
   val spellChecker = new NGramSpellChecker
