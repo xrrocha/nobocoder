@@ -337,10 +337,14 @@ val dictionary = Source.fromFile("files/words.txt").getLines.toSet
 ```
 
 Scala provides the `io.Source` class to perform read operations on a variety of input
-sources. The `fromFile` function opens a file for reading and returns an instance of
-`Source`. This class has a `getLines` method yielding a string iterator to
-read each line in the file. `Iterator`, in turn, provides a `toSet` method that builds
-a `Set`  suitable for efficient membership testing. Cool!
+sources.
+
+- Function `fromFile` opens a file for reading and returns an instance of
+`Source`
+- Method `getLines` in `Source` yields a string `Iterator` that reads each line
+in the file
+- `Iterator`, in turn, provides a `toSet` method that builds a `Set` suitable
+for efficient membership testing.
 
 ### Creating the Similarity Scorer ###
 
