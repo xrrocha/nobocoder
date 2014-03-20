@@ -2,7 +2,8 @@
 
 ## Simple Spelling Suggestion in Scala ##
 
-This document describes a (rather simplistic) spelling suggestion algorithm
+This document (written for the [North Boynton Coders meetup](http://www.meetup.com/nobocoders/events/171065012/))
+describes a rather simplistic spelling suggestion algorithm
 and its evolving implementation in Scala. This implementation starts with a
 scripting formulation that is progressively modified towards a more functional,
 Scala-idiomatic style.
