@@ -1,8 +1,8 @@
-package nobocoder.spelling
+package nobocoder.scala.spelling
 
 import com.typesafe.scalalogging.slf4j.Logging
 import java.io.File
-import nobocoder.util.FileSource
+import nobocoder.scala.util.FileSource
 
 trait SpellCheckerRunnerEnv {
   val wordFilename = "files/words.txt"

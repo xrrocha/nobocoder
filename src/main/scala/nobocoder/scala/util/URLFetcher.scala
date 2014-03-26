@@ -1,4 +1,4 @@
-package nobocoder.util
+package nobocoder.scala.util
 
 import io.Source
 

@@ -1,4 +1,4 @@
-package nobocoder.spelling
+package nobocoder.scala.spelling
 
 import java.io.{FileWriter, PrintWriter}
 

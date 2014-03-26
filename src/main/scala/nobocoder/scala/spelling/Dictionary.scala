@@ -1,4 +1,4 @@
-package nobocoder.spelling
+package nobocoder.scala.spelling
 
 trait DictionaryBuilder {
   def buildDictionary: Set[String]

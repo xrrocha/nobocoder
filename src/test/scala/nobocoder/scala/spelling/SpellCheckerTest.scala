@@ -1,4 +1,4 @@
-package nobocoder.spelling
+package nobocoder.scala.spelling
 
 import org.scalatest.FunSuite
 import org.apache.lucene.search.spell.JaroWinklerDistance

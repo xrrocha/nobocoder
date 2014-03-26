@@ -1,4 +1,4 @@
-package nobocoder.spelling
+package nobocoder.scala.spelling
 
 trait SpellChecker {
   def suggestionsFor(word: String): Option[Seq[String]]
