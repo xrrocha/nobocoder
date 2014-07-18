@@ -11,7 +11,7 @@ scalacOptions ++= Seq(
 	"-language:postfixOps",
 	"-language:experimental.macros")
 
-retrieveManaged := true
+//retrieveManaged := true
 
 name := "spellchecker"
 
