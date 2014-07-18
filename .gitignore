@@ -1,5 +1,5 @@
-/nobocoder.asta.bak
-/stage
-/target
-/project
-/.idea
+nobocoder.asta.bak
+stage
+target
+.cache
+.idea
