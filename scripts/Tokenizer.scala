@@ -1,4 +1,7 @@
-import com.typesafe.scalalogging.slf4j.Logging
+
+import com.typesafe.scalalogging.Logging
+import com.typesafe.scalalogging.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 trait Tokenizer {
   def tokenize(string: String): Seq[String]
@@ -9,6 +12,8 @@ class DefaultTokenizer(separator: String) extends Tokenizer {
 }
 
 object Tokenizer extends Logging {
+  val logger = Logger(LoggerFactory.getLogger(Tokenizer.getClass))
+  
   def apply(): Tokenizer = {
     logger.debug("Using default separator")
     apply("\\s")
