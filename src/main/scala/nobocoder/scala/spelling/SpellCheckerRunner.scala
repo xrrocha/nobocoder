@@ -12,7 +12,7 @@ trait SpellCheckerRunnerEnv {
 }
 
 object SpellCheckerRunner extends App with SpellCheckerRunnerEnv with Logging {
-  val logger = Logger(LoggerFactory.getLogger(SpellCheckerRunner.getClass))
+  val logger = Logger(LoggerFactory.getLogger(getClass))
   
   if (!new File(ngram2wordFilename).exists()) {
     logger.info(s"Preparing ngram2word file")
