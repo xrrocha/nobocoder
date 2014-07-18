@@ -32,9 +32,15 @@ object SpellCheckerRunner extends App with SpellCheckerRunnerEnv with Logging {
     lazy val ngramLines = FileSource.lines(ngram2wordFilename)
   }
 
-  logger.debug(s"args: ${args.mkString(" ")}")
+  val words: Seq[String] =
+    if (args.nonEmpty)
+      args
+    else
+      Seq("good", "word", "here",
+          "badd", "wurd", "herre", "notaword")
+  logger.debug(s"args: ${words.mkString(" ")}")
 
-  spellChecker.suggestionsFor(args).
+  spellChecker.suggestionsFor(words).
     foreach { case (word, suggestions) =>
       println(s"$word: ${suggestions.mkString(",")}")
     }
