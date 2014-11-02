@@ -1,5 +1,6 @@
 package nobocoder.java.spelling.ngram;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
@@ -24,5 +25,18 @@ public class NGramUtilsTest {
                 "ber", "era", "rat", "ati", "tio", "ion");
         List<String> actualNgram3 = NGramUtils.sliding(string, 3).collect(Collectors.toList());
         assertEquals(expectedNgram3, actualNgram3);
+    }
+    
+    @Test
+    public void separatesWords() {
+        String words = " \t Some  words\t@nd   n0nS3ns3   in-between";
+        String[] actualWords = NGramUtils.words(words);
+        String[] expectedWords = new String[] { "some", "words", "@nd", "n0ns3ns3", "in-between" };
+        assertArrayEquals(expectedWords, actualWords);
+    }
+    
+    @Test
+    public void buildsNgram() {
+        String string = "\t strong  \t\t  reverberation \t";
     }
 }

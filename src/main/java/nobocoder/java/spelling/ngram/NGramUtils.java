@@ -8,9 +8,13 @@ import java.util.stream.Stream;
 
 public class NGramUtils {
     public static List<String> ngrams(String string, int ngramLength) {
-        return Arrays.stream(string.trim().toLowerCase().split("\\s++")).
+        return Arrays.stream(words(string)).
             flatMap(w -> sliding(w, ngramLength)).
             collect(Collectors.toList());
+    }
+    
+    public static String[] words(String string) {
+        return string.trim().toLowerCase().split("\\s++");
     }
 
     public static Stream<String> sliding(String string, int length) {
