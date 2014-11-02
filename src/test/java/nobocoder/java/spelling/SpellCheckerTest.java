@@ -38,7 +38,7 @@ public class SpellCheckerTest {
 		assertEquals(suggestionMap, spellChecker.suggestionsFor(words));
 	}
 	
-	// TODO Have mockito invoke real method for interface default methods
+	// TODO Have Mockito invoke real method for interface default methods
 	public void mockitoRemovesWordsWithoutSuggestion() {
 		Set<String> words = new HashSet<>(Arrays.asList(
 				"be", "great", "iz", "misunderstood"));

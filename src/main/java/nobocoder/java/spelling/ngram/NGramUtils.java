@@ -1,16 +1,16 @@
 package nobocoder.java.spelling.ngram;
 
 import java.util.Arrays;
-import java.util.List;
+import java.util.Collection;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class NGramUtils {
-    public static List<String> ngrams(String string, int ngramLength) {
+    public static Collection<String> ngrams(String string, int ngramLength) {
         return Arrays.stream(words(string)).
             flatMap(w -> sliding(w, ngramLength)).
-            collect(Collectors.toList());
+            collect(Collectors.toSet());
     }
     
     public static String[] words(String string) {

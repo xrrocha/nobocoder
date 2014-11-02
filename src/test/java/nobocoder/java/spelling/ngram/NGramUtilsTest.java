@@ -4,6 +4,8 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,7 +31,7 @@ public class NGramUtilsTest {
     
     @Test
     public void separatesWords() {
-        String words = " \t Some  words\t@nd   n0nS3ns3   in-between";
+        String words = " \t Some  words\t@nd   n0nS3ns3   in-between ";
         String[] actualWords = NGramUtils.words(words);
         String[] expectedWords = new String[] { "some", "words", "@nd", "n0ns3ns3", "in-between" };
         assertArrayEquals(expectedWords, actualWords);
@@ -38,5 +40,11 @@ public class NGramUtilsTest {
     @Test
     public void buildsNgram() {
         String string = "\t strong  \t\t  reverberation \t";
+        Collection<String> expectedNgrams = new HashSet<>(Arrays.asList(
+                "st", "tr", "ro", "on", "ng",
+                "re", "ev", "ve", "er", "rb",
+                "be", "ra", "at", "ti", "io", "on"));
+        Collection<String> actualNgrams = NGramUtils.ngrams(string, 2);
+        assertEquals(actualNgrams, expectedNgrams);
     }
 }
