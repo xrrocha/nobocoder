@@ -1,4 +1,3 @@
-*.bak
 .cache
 .classpath
 .idea
@@ -6,5 +5,4 @@
 *.log
 .project
 .settings
-stage
 target
