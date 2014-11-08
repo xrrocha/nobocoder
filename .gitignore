@@ -1,6 +1,8 @@
 *.bak
 .cache
 .classpath
+/**/.codenvy
+.codenvy
 .idea
 *.iml
 *.log
