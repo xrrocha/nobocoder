@@ -1,7 +1,7 @@
 package nobocoder.scala.spelling
 
-import com.typesafe.scalalogging.Logging
-import com.typesafe.scalalogging.slf4j.Logger
+import com.typesafe.scalalogging.StrictLogging
+import com.typesafe.scalalogging.Logger
 import org.slf4j.LoggerFactory
 import java.io.File
 import nobocoder.scala.util.FileSource
@@ -11,8 +11,8 @@ trait SpellCheckerRunnerEnv {
   val ngram2wordFilename = "files/ngram2word.txt"
 }
 
-object SpellCheckerRunner extends App with SpellCheckerRunnerEnv with Logging {
-  val logger = Logger(LoggerFactory.getLogger(getClass))
+object SpellCheckerRunner extends App with SpellCheckerRunnerEnv with StrictLogging {
+  override val logger = Logger(LoggerFactory.getLogger(getClass))
   
   if (!new File(ngram2wordFilename).exists()) {
     logger.info(s"Preparing ngram2word file")
