@@ -7,8 +7,8 @@ import java.io.File
 import nobocoder.scala.util.FileSource
 
 trait SpellCheckerRunnerEnv {
-  val wordFilename = "files/words.txt"
-  val ngram2wordFilename = "files/ngram2word.txt"
+  val wordFilename = "../files/words.txt"
+  val ngram2wordFilename = "../files/ngram2word.txt"
 }
 
 object SpellCheckerRunner extends App with SpellCheckerRunnerEnv with StrictLogging {
