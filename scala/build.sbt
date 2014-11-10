@@ -2,7 +2,7 @@ name := "nobocoder"
 
 version := "0.1"
 
-scalaVersion := "2.11.3"
+scalaVersion := "2.11.4"
 
 libraryDependencies ++= Seq(
   "org.apache.lucene" % "lucene-spellchecker" % "3.6.2",
