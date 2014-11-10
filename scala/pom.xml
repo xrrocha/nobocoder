@@ -16,7 +16,7 @@
 
     <properties>
         <scala.version>2.11</scala.version>
-        <scala-logging.version>2.1.2</scala-logging.version>
+        <scala-logging.version>3.1.0</scala-logging.version>
         <slf4j-log4j12.version>1.7.7</slf4j-log4j12.version>
         <scalatest.version>2.2.2</scalatest.version>
     </properties>
@@ -29,7 +29,7 @@
         </dependency>
         <dependency>
             <groupId>com.typesafe.scala-logging</groupId>
-            <artifactId>scala-logging-slf4j_${scala.version}</artifactId>
+            <artifactId>scala-logging_${scala.version}</artifactId>
             <version>${scala-logging.version}</version>
         </dependency>
         <dependency>
