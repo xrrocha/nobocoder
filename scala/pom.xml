@@ -16,7 +16,7 @@
 
     <properties>
         <scala.version>2.11</scala.version>
-        <scala-minor.version>4</scala-minor.version>
+        <scala-minor.version>5</scala-minor.version>
         <scala-logging.version>3.1.0</scala-logging.version>
         <slf4j-log4j12.version>1.7.7</slf4j-log4j12.version>
         <scalatest.version>2.2.2</scalatest.version>
