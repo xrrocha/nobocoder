@@ -1,0 +1,183 @@
+@import Helpers._
+
+@sect("Functional Programming in Java 8, Scala and Xtend", "North Boynton Coders Scala Presentation")
+
+  @p
+    This article presents a simple introduction to functional programming in three JVM programming languages:
+    @lnk("Java 8", "http://docs.oracle.com/javase/8/"),
+    @lnk("Scala", "http://scala-lang.org/") and
+    @lnk("Xtend", "http://eclipse.org/xtend/").
+
+  @p
+    A somewhat simplistic spelling suggestion algorithm is devised and then implemented in a traditional
+    imperative style. This implementation is subsequently evolved as functional programming concepts are
+    introduced until an idiomatic functional formulation is achieved.
+
+  @p
+    The evolving implementation is presented simultaneously in Java, Xtend and Scala. This is useful to
+    understand how functional constructs are expressed in the three languages as well as to contrast
+    them in terms of readability and economy of expression.
+
+  @sect("Spelling Suggestion in a Nutshell")
+    @p
+      Spelling checking is about looking up words in a dictionary.
+
+      Words found in the dictionary are deemed to be correct and, therefore, don't result in any suggestion.
+
+      Words @i{not} found in the dictionary, on the other hand, can be either:
+
+      @ul
+        @li{New terms that should be added to the dictionary, or (more likely)}
+        @li{Misspellings for which a list of @b{similar} words needs to be provided}
+
+  @sect("String Similarity")
+    @p
+      The key word above is @i{similar}: how do we decide whether two words are similar enough so as to
+      recommend one as a possible replacement for the other?
+
+    @p
+      @lnk("String similarity algorithms", "http://en.wikipedia.org/wiki/String_metric") quantify the similarity
+      between pairs of strings. Customarily, similarity values oscillate between 0 (not at all similar)
+      to 1 (exactly equal.) String similarity metrics are also referred to as @i{string distance metrics}.
+
+    @p
+      There's no shortage of @lnk("string similarity metrics", "http://en.wikipedia.org/wiki/String_similarity")
+      but for our purposes we'll play with two popular ones: Levenshtein and JaroWinkler.
+
+    @p
+      The @lnk("Levenshtein", "http://en.wikipedia.org/wiki/Levenshtein_distance") metric measures the number of character
+      edits (deletions, transpositions, additions) required to turn one string into another. The higher the number of edits,
+      the less similar the two strings are. Zero edits means the strings are one and the the same. Given the maximum
+      length of the two strings, the number of edits can be expressed as a value between 0 and 1.
+
+    @p
+      The @lnk("JaroWinkler", "http://en.wikipedia.org/wiki/Levenshtein_distance")  metric measures character commonality
+      between two strings favoring those with a common prefix. This algorithm always yields a number between 0 and 1 and
+      is typically used to compare person names.
+
+    @p
+      For our little project we'll use
+      @lnk("Apache Lucene's string distance support",
+      "http://lucene.apache.org/core/3_5_0/api/contrib-spellchecker/org/apache/lucene/search/spell/StringDistance.html").
+
+
+  @sect("Similarity Examples")
+    @p
+      Consider the following dictionary fragment:
+
+    @dataTable("""
+      Word
+      academic
+      academy
+      accent
+      accept
+      accident
+      account
+      accountant
+      acid
+      count
+    """)
+
+    @p
+      The following table shows the similarity ordered scores for the above dictionary words and the misspelled word
+      @i{academmic}:
+
+    @dataTable("""
+      Word,Levenshtein|r,JaroWinkler|r
+      academic,0.8889,0.9852
+      academy,0.6667,0.9365
+      acid,0.3333,0.6944
+      accident,0.3333,0.6481
+      accent,0.3333,0.6111
+      accept,0.3333,0.6111
+      account,0.2222,0.5026
+      accountant,0.2000,0.4741
+      count,0.1111,0.4370
+    """)
+
+    @p
+      In order to identify similar words that ought to be suggested as corrections, we need to establish a
+      @i{minimum similarity threshold} for each metric so as to weed out not-so-similar terms.
+
+    @p
+      Thus, in the above example, it would appear that anything below 0.7 for Levenshtein or below 0.9 for JaroWinkler
+      is probably not similar enough.
+
+  @sect("Comparison Explosion")
+    @p
+      In order to be exhaustive, a naïve spelling suggestion implementation would compare each unknown word with @i{all}
+      words in the dictionary collecting only those whose similarity score is above a configured threshold.
+
+    @p
+      A useful dictionary will contain several tens of thousand words. Comparing each unknown term with so many words is
+      clearly unacceptable, especially given how costly a similarity comparison is as opposed to simple string equality.
+
+    @p
+      Thus, for a 72k-word dictionary and a Levenshtein threshold of 0.725, the following 3 typos would require
+      216,000 similarity comparisons to come up with the few suggestions shown below:
+
+    @dataTable("""
+      Typo;Suggestions
+      acident;accident, accidents, acridest, incident, occident
+      academmy;academy, academia, academic
+      accountn;accident, accidents, acridest, incident, occident
+    """, ";")
+
+  @sect("N-Grams to the Rescue")
+    @p
+      We need an inexpensive mechanism to avoid performing costly comparisons most of which will only yield scores below
+      the minimum similarity threshold.
+
+    @p
+      As it turns out, string similarity is closely related to character commonality: the higher a similarity score is
+      for a given pair of string the more characters they share at the same or very close positions.
+
+    @p
+      An @i{@lnk("n-gram", "http://en.wikipedia.org/wiki/N-gram")}
+      is a (generally small) substring of contiguous characters drawn from a larger string. The @i{n} in n-gram
+      corresponds to its length. Thus, a @i{bi}gram contains 2 characters, while a @i{tri}gram contains 3.
+
+    @p
+      The following is the list of all bigrams and trigrams for the (cool!) word nobocoder:
+
+    @dataTable("""
+      Bigrams|c,Trigrams|c
+      no,nob
+      ob,obo
+      bo,boc
+      oc,oco
+      co,cod,
+      od,ode
+      de,der
+      er,
+    """)
+
+    @p
+      It's not hard to see that @i{nobocoder} and @i{novocoder} share 7 of their 8 bigrams and 6 of their 7 trigrams.
+      N-Gram distance is, in fact, a similarity metric in its own right (albeit somewhat less effective for our purposes
+      than, say, Levenshtein).
+
+    @p
+      For short strings such as dictionary words, restricting word pairs to those sharing at least one bigram expunges a
+      surprisingly high number of otherwise wasteful comparisons.
+
+    @p
+      Equipped with this knowledge we can now identify the data structures needed by our basic algorithm.
+
+  @sect("Spelling Data Structures")
+
+    @p
+      Spelling suggestion requires two operations:
+
+    @ul
+      @li{Determining whether a given word occurs in the dictionary or not}
+      @li{For a given unknown word, determining what known words are sufficiently similar to it}
+
+    @sect("Word Membership")
+
+      @p
+        A @code{Set} is the appropriate data structure to efficiently ascertain word membership. If our dictionary is stored
+        in a set, our lookup code could look like:
+
+
+
