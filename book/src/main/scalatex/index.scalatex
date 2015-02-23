@@ -179,5 +179,49 @@
         A @code{Set} is the appropriate data structure to efficiently ascertain word membership. If our dictionary is stored
         in a set, our lookup code could look like:
 
+      @multiSnippet
+        @div(lang := "java")
+          @code
+            Set<String> dictionary = Arrays.asSet({
+              "academic", "academy", "accent",
+              "accept", "accident", "account",
+              "accountant", "acid"
+            });
+            . . .
+            String word = "...";
+            . . .
+            if (!dictionary.contains(word)) {
+              System.out.println("No such word: " + word);
+            }
+          @div
+        @div(lang := "scala")
+          @code
+            val dictionary = Set(
+              "academic", "academy", "accent",
+              "accept", "accident", "account",
+              "accountant", "acid"
+            )
+            . . .
+            val word = "..."
+            . . .
+            if (!dictionary.contains(word)) {
+              println(s"No such word: $word")
+            }
+          @div
+        @div(lang := "xtend")
+          @code
+            val dictionary = #{
+              'academic', 'academy', 'accent',
+              'accept', 'accident', 'account',
+              'accountant', 'acid'
+            }
+            . . .
+            val word = '...'
+            . . .
+            if (!dictionary.contains(word)) {
+              println(s'''No such word: «word»''')
+            }
+          @div
+
 
 

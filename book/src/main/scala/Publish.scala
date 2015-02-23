@@ -13,10 +13,10 @@ object Publish {
 
       override def headFrags: Seq[Frag] = super.headFrags ++ Seq(
         meta(charset := "UTF-8"),
-        link(href := "book.css", rel := "stylesheet"),
-        link(href := "//code.jquery.com/ui/1.11.3/themes/smoothness/jquery-ui.css", rel := "stylesheet"),
-        script(src:= "//code.jquery.com/jquery-1.10.2.js"),
-        script(src:= "//code.jquery.com/ui/1.11.3/jquery-ui.js")
+        link(href := "css/book.css", rel := "stylesheet"),
+        link(href := "http://code.jquery.com/ui/1.11.3/themes/smoothness/jquery-ui.css", rel := "stylesheet"),
+        script(src:= "http://code.jquery.com/jquery-1.10.2.js"),
+        script(src:= "http://code.jquery.com/ui/1.11.3/jquery-ui.js")
       )
 
       override def bundleResources(outputRoot: Path) = {
