@@ -76,50 +76,53 @@ object Helpers {
   def multiSnippet(frags: Frag*) = {
    val snippets = frags
       .filter(_.isInstanceOf[TypedTag[String]])
-      .map(_.asInstanceOf[TypedTag[String]].modifiers)
-      .map { (pair: List[Seq[Text.Modifier]]) =>
-        val children = pair(0)
-          .filter(_.isInstanceOf[TypedTag[String]])
-          .map(_.asInstanceOf[TypedTag[String]])
-          .map(ttag => (ttag.tag, ttag))
-          .toMap
-        val attributes = pair(1).map { case AttrPair(Attr(name), value, _) =>
-          (name, value.toString)
-        }.toMap
-        (children, attributes)
+      .map(_.asInstanceOf[TypedTag[String]])
+      .filter(_.tag == "code")
+      .map { typedTag =>
+        val (attributes, children) = typedTag.modifiers
+          .flatten
+          .partition(_.isInstanceOf[AttrPair[_, _]])
+
+        val language = Language(
+          attributes
+            .map{case AttrPair(Attr(name), value, _) => (name, value.toString)}
+            .filter{case(name, value) => name == "class"}
+            .map{case(name, value) => value.substring(9)}
+            .head
+        )
+
+        val lines = children
+          .map(_.asInstanceOf[Frag].render)
+          .mkString("\n")
+          .split("\\r?\\n").toList
+
+        (language, lines)
       }
-      .sortBy { case(children, attributes) =>
-        Language(attributes("lang")).order
+      .sortBy { case(language, lines) =>
+        language.order
       }
 
     snippetCount += 1
 
     val tabs = ul(
-      snippets.map { case(children, attributes) =>
+      snippets.map { case(language, lines) =>
+        val languageName = language.name.toLowerCase
         li(
           a(
-            href := s"#snippet-${attributes("lang")}-$snippetCount",
-            img(src := s"img/${attributes("lang")}-icon-16.png"),
+            href := s"#snippet-$languageName-$snippetCount",
+            img(src := s"img/$languageName-icon-16.png"),
             raw("&#160;"),
-            Language.values(attributes("lang")).name
+            language.name
           )
         )
       }
     )
 
-    val divs = snippets.map { case(children, attributes) =>
+    val divs = snippets.map { case(language, lines) =>
+      val languageName = language.name.toLowerCase
       div(
-        id := s"snippet-${attributes("lang")}-$snippetCount",
-        lang := attributes("lang"),
+        id := s"snippet-$languageName-$snippetCount",
         pre({
-          val lines = children("code")
-            .modifiers
-            .flatten
-            .filter(_.isInstanceOf[StringFrag])
-            .map { case StringFrag(line) => line }
-            .mkString("\n")
-            .split("\\r?\\n")
-            .toList
           val textLines = lines match {
             case line :: rest if line.trim.length == 0 => rest
             case _ => lines
@@ -128,16 +131,14 @@ object Helpers {
             if (textLines.length == 0) Seq()
             else {
               val prefix = textLines.head.takeWhile(Character.isWhitespace)
-              textLines.map("  " + _.substring(prefix.length))
+              textLines.map(_.substring(prefix.length))
             }
 
           code(
-            cls := s"language-${attributes("lang")}",
-            result.mkString("\n")
+            cls := s"language-$languageName}",
+            raw(result.mkString("\n"))
           )
-        }),
-        hr(),
-        children.getOrElse("div", div(cls := "snippet-comment"))
+        })
       )
     }
 
@@ -148,8 +149,6 @@ object Helpers {
   }
 
   def snippet(language: Language)(frags: Frag*) = {
-    div(lang := language.toString, frags)
+    code(cls := s"language-${language.toString}", frags)
   }
-
-  def comment(frags: Frag*) = div(cls := "snippet-comment", frags)
 }

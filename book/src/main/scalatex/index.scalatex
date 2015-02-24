@@ -180,49 +180,43 @@
         in a set, our lookup code could look like:
 
       @multiSnippet
-        @div(lang := "java")
-          @code
-            Set<String> dictionary = new HashSet<>(Arrays.asList(
-              new String[] {
-                "academic", "academy", "accent",
-                "accept", "accident", "account",
-                "accountant", "acid"
-            }));
-            . . .
-            String word = "...";
-            . . .
-            if (!dictionary.contains(word)) {
-              System.out.println("No such word: " + word);
-            }
-          @div
-        @div(lang := "scala")
-          @code
-            val dictionary = Set(
+        @snippet(java)
+          Set<String> dictionary = new HashSet<>(Arrays.asList(
+            new String[] {
               "academic", "academy", "accent",
               "accept", "accident", "account",
               "accountant", "acid"
-            )
-            . . .
-            val word = "..."
-            . . .
-            if (!dictionary.contains(word)) {
-              println(s"No such word: $word")
-            }
-          @div
-        @div(lang := "xtend")
-          @code
-            val dictionary = #{
-              'academic', 'academy', 'accent',
-              'accept', 'accident', 'account',
-              'accountant', 'acid'
-            }
-            . . .
-            val word = '...'
-            . . .
-            if (!dictionary.contains(word)) {
-              println(s'''No such word: «word»''')
-            }
-          @div
+          }));
+          . . .
+          String word = "...";
+          . . .
+          if (!dictionary.contains(word)) {
+            System.out.println("No such word: " + word);
+          }
+        @snippet(scala)
+          val dictionary = Set(
+            "academic", "academy", "accent",
+            "accept", "accident", "account",
+            "accountant", "acid"
+          )
+          . . .
+          val word = "..."
+          . . .
+          if (!dictionary.contains(word)) {
+            println(s"No such word: $word")
+          }
+        @snippet(xtend)
+          val dictionary = #{
+            'academic', 'academy', 'accent',
+            'accept', 'accident', 'account',
+            'accountant', 'acid'
+          }
+          . . .
+          val word = '...'
+          . . .
+          if (!dictionary.contains(word)) {
+            println(s'''No such word: «word»''')
+          }
 
 
 
