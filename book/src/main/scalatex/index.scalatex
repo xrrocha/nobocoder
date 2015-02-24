@@ -181,8 +181,7 @@
 
       @multiSnippet
         @snippet(java)
-          Set<String> dictionary = new HashSet<>(Arrays.asList(
-            new String[] {
+          Set<String> dictionary = new HashSet<>(Arrays.asList(new String[] {
               "academic", "academy", "accent",
               "accept", "accident", "account",
               "accountant", "acid"

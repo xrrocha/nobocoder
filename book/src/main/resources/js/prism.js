@@ -600,7 +600,7 @@ Prism.languages.xtend = Prism.languages.extend('scala', {
     'builtin': /\b(String|Int|Long|Short|Byte|Boolean|Double|Float|Char|Any|AnyRef|AnyVal|Unit|Nothing)\b/g,
     'number': /\b0x[\da-f]*\.?[\da-f\-]+\b|\b\d*\.?\d+[e]?[\d]*[dfl]?\b/gi,
     'symbol': /'([^\d\s]\w*)/g,
-    'string': /(""")[\W\w]*?\1|("|\/)[\W\w]*?\2|('.')/g
+    'string': /("""|''')[\W\w]*?\1|("|'|\/)[\W\w]*?\2/g
 });
 delete Prism.languages.scala['class-name'];
 delete Prism.languages.scala['function'];

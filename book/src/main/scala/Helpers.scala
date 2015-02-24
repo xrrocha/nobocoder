@@ -65,9 +65,10 @@ object Helpers {
   case object scala extends Language("Scala", 2)
   case object xtend extends Language("Xtend", 3)
   object Language {
-    val values = Seq(java, scala, xtend)
+    lazy val values = Seq(java, scala, xtend)
       .map(l => l.name.toLowerCase -> l)
       .toMap
+
     def apply(name: String) = values(name)
   }
 
@@ -94,7 +95,8 @@ object Helpers {
         val lines = children
           .map(_.asInstanceOf[Frag].render)
           .mkString("\n")
-          .split("\\r?\\n").toList
+          .split("\\r?\\n")
+          .toList
 
         (language, lines)
       }
@@ -122,23 +124,10 @@ object Helpers {
       val languageName = language.name.toLowerCase
       div(
         id := s"snippet-$languageName-$snippetCount",
-        pre({
-          val textLines = lines match {
-            case line :: rest if line.trim.length == 0 => rest
-            case _ => lines
-          }
-          val result =
-            if (textLines.length == 0) Seq()
-            else {
-              val prefix = textLines.head.takeWhile(Character.isWhitespace)
-              textLines.map(_.substring(prefix.length))
-            }
-
-          code(
+        pre(code(
             cls := s"language-$languageName}",
-            raw(result.mkString("\n"))
-          )
-        })
+            raw(lines.mkString("\n"))
+        ))
       )
     }
 
@@ -149,6 +138,27 @@ object Helpers {
   }
 
   def snippet(language: Language)(frags: Frag*) = {
-    code(cls := s"language-${language.toString}", frags)
+    val lines = frags
+      .map(_.render)
+      .mkString("\n")
+      .split("\\r?\\n")
+      .toList
+
+    val textLines = lines match {
+      case line :: rest if line.trim.length == 0 => rest
+      case _ => lines
+    }
+
+    val result =
+      if (textLines.length == 0) Seq()
+      else {
+        val prefix = textLines.head.takeWhile(Character.isWhitespace)
+        textLines.map(_.substring(prefix.length))
+      }
+
+    code(
+      cls := s"language-${language.name.toLowerCase}",
+      raw(result.mkString("\n"))
+    )
   }
 }
