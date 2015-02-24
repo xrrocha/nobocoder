@@ -9,7 +9,7 @@ import scalatags.text.Builder
 object Helpers {
   object sect extends scalatex.site.Section()
 
-  object hl extends scalatex.site.Highlighter{
+  object hl extends scalatex.site.Highlighter {
     def suffixMappings = Map(
       "scala" -> "scala",
       "xtend" -> "xtend",
@@ -131,10 +131,13 @@ object Helpers {
               textLines.map("  " + _.substring(prefix.length))
             }
 
-          code(hl.highlight(result.mkString("\n"), attributes("lang")))
+          code(
+            cls := s"language-${attributes("lang")}",
+            result.mkString("\n")
+          )
         }),
         hr(),
-        children.get("div").getOrElse(div())
+        children.getOrElse("div", div(cls := "snippet-comment"))
       )
     }
 

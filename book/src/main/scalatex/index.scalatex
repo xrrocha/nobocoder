@@ -182,11 +182,12 @@
       @multiSnippet
         @div(lang := "java")
           @code
-            Set<String> dictionary = Arrays.asSet({
-              "academic", "academy", "accent",
-              "accept", "accident", "account",
-              "accountant", "acid"
-            });
+            Set<String> dictionary = new HashSet<>(Arrays.asList(
+              new String[] {
+                "academic", "academy", "accent",
+                "accept", "accident", "account",
+                "accountant", "acid"
+            }));
             . . .
             String word = "...";
             . . .
