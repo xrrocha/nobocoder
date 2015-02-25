@@ -315,17 +315,33 @@
       @snippet(java)
         import org.apache.lucene.search.spell.LevensteinDistance;
         . . .
-        // Build ngram-to-wordset map
-        final Map<String, Set<String>> ngram2Words = buildNgram2Words();
+        // Bigram-to-wordset map
+        final Map<String, Set<String>> ngram2Words = new HashMap<>();
+            ngram2Words.put("ac", new HashSet<>(Arrays.asList(
+                   "academic", "academy", "accent", "accept",
+                   "accident", "account", "accountant", "acid")));
+            // ...lots of bigrams and words ellided...
+            ngram2Words.put("un", new HashSet<>(Arrays.asList(
+                   "account", "accountant", "count")));
 
-        final LevensteinDistance levenshtein = new LevensteinDistance();
+        // Similarity metric
         final double minSimilarity = 0.75;
+        final LevensteinDistance levenshtein = new LevensteinDistance();
 
+        // The typo in question
         final String typo = "accet";
 
-        // Extract ngrams from typo
-        Set<String> typoNgrams =  ngrams(typo, 2);
+        // Extract bigrams from typo
+        int ngramLength = 2;
+        Set<String> typoNgrams =
+                // Build a range from 0 to last allowable position
+                IntStream.range(0, typo.length() - ngramLength + 1)
+                    // Extract ngram starting at each successive position
+                    .mapToObj(pos -> typo.substring(pos, pos + ngramLength))
+                    // Collect ngrams into set to remove dups
+                    .collect(Collectors.toSet());
 
+        // Word/score pair data class
         class WordScore {
           String word;
           double score;
@@ -336,22 +352,124 @@
         }
 
         List<String> suggestions = typoNgrams.stream()
+                // Select only ngrams appearing in the ngram-to-word map
                 .filter(ngram2Words::containsKey)
+                // Produce the list of all words sharing ngrams with typo
                 .flatMap(ngram -> ngram2Words.get(ngram).stream())
+                // Make word list into a set to remove dups
                 .collect(Collectors.toSet()).stream()
+                // Convert each word into a word/similarity score pair
                 .map(word -> new WordScore(word, levenshtein.getDistance(word, typo)))
+                // Remove scores below minimum allowed similarity
                 .filter(wordScore -> wordScore.score >= minSimilarity)
+                // Sort descending so as to show more similar words first
                 .sorted((ws1, ws2) -> (int) (ws2.score - ws1.score))
+                // Extract word only, removing score
                 .map(wordScore -> wordScore.word)
+                // Collect results into a list
                 .collect(Collectors.toList());
 
+        // Prints: Suggestions for 'accet': [accent, accept]
         System.out.println("Suggestions for '" + typo + "': " + suggestions);
 
       @snippet(scala)
-        // some code
+        import org.apache.lucene.search.spell.LevensteinDistance
+        . . .
+        // Bigram-to-wordset map
+        lazy val ngram2Words = Map(
+          "ac" -> Set("academic", "academy", "accent", "accept",
+                      "accident", "account", "accountant", "acid"),
+          // ...lots of bigrams and words ellided...
+          "un" -> Set("account", "accountant", "count")
+        )
+        . . .
+        // Similarity metric
+        val minSimilarity = 0.75;
+        val levenshtein = new LevensteinDistance
+
+        // The typo in question
+        val typo = "accet";
+
+        // Extract bigrams from typo
+        val ngramLength = 2;
+        val typoNgrams = {
+          for (pos <- 0 until typo.length - ngramLength + 1)
+            yield typo.substring(pos, pos + ngramLength)
+        }.toSet // Force collection to set so as to remove dups
+
+        val suggestions = typoNgrams
+                // Select only ngrams appearing in the ngram-to-word map
+                .filter(ngram2Words.contains)
+                // Produce the set of all words sharing ngrams with typo
+                .flatMap(ngram => ngram2Words(ngram))
+                // Convert each word into a word/similarity score pair
+                .map(word => (word, levenshtein.getDistance(word, typo)))
+                // Remove scores below minimum allowed similarity
+                .filter(_._2 >= minSimilarity)
+                // Make into sequence for sorting
+                .toSeq
+                // Sort descending so as to show more similar words first
+                .sortBy(-_._2)
+                // Extract word only, removing score
+                .map(_._1)
+
+        // Prints: Suggestions for 'accet': [accent, accept]
+        println(s"Suggestions for '$typo': [${suggestions.mkString(", ")}]");
 
       @snippet(xtend)
-        // some code
+        import org.apache.lucene.search.spell.LevensteinDistance
+        . . .
+        static val ngram2Words = #{
+            'ac' -> #{'academic', 'academy', 'accent', 'accept',
+                      'accident', 'account', 'accountant', 'acid'},
+            // ...lots of bigrams and words ellided...
+            'un' -> #{'account', 'accountant', 'count' }
+        }
+        . . .
+        // Word/score pair data class
+        @@Data static class WordScore {
+          String word
+          double score
+        }
+        . . .
+        // Similarity metric
+        val minSimilarity = 0.75
+        val levenshtein = new LevensteinDistance
+
+        // The typo in question
+        val typo = 'accet'
+
+        // Extract bigrams from typo
+        val ngramLength = 2
+        val typoNgrams =
+                // Build a range from 0 to last allowable position
+                (0 ..< typo.length - ngramLength + 1)
+                    // Extract ngram starting at each successive position
+                    .map[pos | typo.substring(pos, pos + ngramLength)]
+                    // Make into set to remove dups
+                    .toSet
+
+        val suggestions = typoNgrams
+                // Select only ngrams appearing in the ngram-to-word map
+                .filter[ngram | ngram2Words.containsKey(ngram)]
+                // Produce the set of all words sharing ngrams with typo
+                .map[ngram | ngram2Words.get(ngram)]
+                // Flatten nested collection
+                .flatten
+                // Make word list into a set to remove dups
+                .toSet
+                // Convert each word into a word/similarity score pair
+                .map[word | new WordScore(word, levenshtein.getDistance(word, typo))]
+                // Remove scores below minimum allowed similarity
+                .filter[wordScore | wordScore.score >= minSimilarity]
+                // Sort descending so as to show more similar words first
+                .sortBy[wordScore | -wordScore.score]
+                // Extract word only, removing score
+                .map[wordScore | wordScore.word]
+
+
+        // Prints: Suggestions for 'accet': [accent, accept]
+        println('''Suggestions for '«typo»': «suggestions»''')
 
 
 
