@@ -153,7 +153,7 @@ object Helpers {
       if (textLines.length == 0) Seq()
       else {
         val prefix = textLines.head.takeWhile(Character.isWhitespace)
-        textLines.map(_.substring(prefix.length))
+        textLines.map(line => line.substring(math.min(prefix.length, line.length)))
       }
 
     code(

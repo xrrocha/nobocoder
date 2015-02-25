@@ -181,11 +181,11 @@
 
       @multiSnippet
         @snippet(java)
-          Set<String> dictionary = new HashSet<>(Arrays.asList(new String[] {
+          Set<String> dictionary = new HashSet<>(Arrays.asList(
               "academic", "academy", "accent",
               "accept", "accident", "account",
               "accountant", "acid"
-          }));
+          ));
           . . .
           String word = "...";
           . . .
@@ -216,6 +216,143 @@
           if (!dictionary.contains(word)) {
             println(s'''No such word: «word»''')
           }
+
+    @sect("Findind Similar Words")
+
+      @p
+        Finding similar words is a bit more involved: we need a @code{Map} connecting each bigram to the Set of
+        words in which it occurs.
+
+      @p
+        Thus, for our above dictionary fragment, the bigram-to-wordset map would be:
+
+      @dataTable("""
+        Bigram|c;Word Set|l
+        ac;academic, academy, accent, accept, accident, account, accountant, acid
+        ad;academic, academy
+        an;accountant
+        ca;academic, academy
+        cc;accent, accept, accident, account, accountant
+        ce;accent, accept
+        ci;accident, acid
+        co;account, accountant, count
+        de;academic, academy, accident
+        em;academic, academy
+        en;accent, accident
+        ep;accept
+        ic;academic
+        id;accident, acid
+        mi;academic
+        my;academy
+        nt;accent, accident, account, accountant, count
+        ou;account, accountant, count
+        pt;accept
+        ta;accountant
+        un;account, accountant, count
+      """, ";")
+
+    @p
+      Given this map, let's consider the typo @i{accet}. This typo has the following bigrams:
+
+    @dataTable("""
+      Typo|l,Bigrams|c
+      accet,ac
+      ,cc
+      ,ce
+      ,et
+    """)
+
+    @p
+      Extracting the words associated with these bigrams from our map we obtain:
+
+    @dataTable("""
+      Typo|l;Bigrams|c;Matching Words
+      accet;ac;academic, academy, accent, accept, accident, account, accountant, acid
+      ;cc;accent, accept, accident, account, accountant
+      ;ce;accent, accept
+      ;et;[no matching words]
+    """, ";")
+
+    @p
+      The union set of these related words is:
+
+    @dataTable("""
+      Typo|c,Related Words
+      accet,academic
+      ,academy
+      ,accent
+      ,accept
+      ,accident
+      ,account
+      ,accountant
+      ,acid
+    """)
+
+    @p
+      We can now compare our typo @i{accet} with each of these related words using the Levenshtein similarity metric:
+
+    @dataTable("""
+      Typo|c,Word|l,Score|r
+      accet,accent,0.8333
+      ,accept,0.8333
+      ,accident,0.6250
+      ,account,0.5714
+      ,academy,0.4286
+      ,accountant,0.4000
+      ,acid,0.4000
+      ,academic,0.3750
+    """)
+
+    @p
+      With a minimum similarity of @code{0.75} only the words accent and accept would be returned as suggestions.
+
+  @sect("Spelling Suggestion Algorithm")
+
+    @p
+     We can now sketch our algorithm as follows:
+
+    @multiSnippet
+      @snippet(java)
+        import org.apache.lucene.search.spell.LevensteinDistance;
+        . . .
+        // Build ngram-to-wordset map
+        final Map<String, Set<String>> ngram2Words = buildNgram2Words();
+
+        final LevensteinDistance levenshtein = new LevensteinDistance();
+        final double minSimilarity = 0.75;
+
+        final String typo = "accet";
+
+        // Extract ngrams from typo
+        Set<String> typoNgrams =  ngrams(typo, 2);
+
+        class WordScore {
+          String word;
+          double score;
+          WordScore(String word, double score) {
+            this.word = word;
+            this.score = score;
+          }
+        }
+
+        List<String> suggestions = typoNgrams.stream()
+                .filter(ngram2Words::containsKey)
+                .flatMap(ngram -> ngram2Words.get(ngram).stream())
+                .collect(Collectors.toSet()).stream()
+                .map(word -> new WordScore(word, levenshtein.getDistance(word, typo)))
+                .filter(wordScore -> wordScore.score >= minSimilarity)
+                .sorted((ws1, ws2) -> (int) (ws2.score - ws1.score))
+                .map(wordScore -> wordScore.word)
+                .collect(Collectors.toList());
+
+        System.out.println("Suggestions for '" + typo + "': " + suggestions);
+
+      @snippet(scala)
+        // some code
+
+      @snippet(xtend)
+        // some code
+
 
 
 

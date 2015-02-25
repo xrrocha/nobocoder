@@ -27,7 +27,7 @@ object Publish {
         super.bundleResources(outputRoot)
 
         val resourceDir = wd/'src/'main/'resources
-        val localResources = (ls.rec! resourceDir |? (_.fileType == FileType.File))
+        val localResources = ls.rec! resourceDir |? (_.fileType == FileType.File)
         for (res <- localResources) {
           read.bytes! res |> write.over! outputRoot/(res - resourceDir)
         }
