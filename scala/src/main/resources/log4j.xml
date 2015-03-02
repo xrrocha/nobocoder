@@ -8,11 +8,11 @@
 			<param name="ConversionPattern" value="%-5p %c{1} - %m%n" />
 		</layout>
 	</appender>
-    <logger name="nobocoder.scala.spelling">
+<!--     <logger name="nobocoder.scala.spelling">
         <level value="debug" />
         <appender-ref ref="console" />
     </logger>
-    <logger name="nobocoder.scala.spelling.ngram">
+ -->    <logger name="nobocoder.scala.spelling.ngram">
         <level value="debug" />
         <appender-ref ref="console" />
     </logger>

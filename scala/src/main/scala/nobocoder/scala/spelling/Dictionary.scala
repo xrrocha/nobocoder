@@ -8,9 +8,9 @@ trait WordListDictionaryBuilder extends DictionaryBuilder {
   def wordList: Iterable[String]
 
   def buildDictionary: Set[String] =
-    wordList.
-      flatMap { word =>
+    wordList
+      .flatMap { word =>
         word.split("\\s+").map(_.trim.toLowerCase)
-      }.
-      toSet
+      }
+      .toSet
 }
