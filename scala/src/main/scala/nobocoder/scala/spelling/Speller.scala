@@ -7,7 +7,7 @@ import java.io.FileWriter
 import org.apache.lucene.search.spell.LevensteinDistance
 
 object Speller extends App {
-  val WordPattern = "^\\p{Alpha}+$".r
+  val WordPattern = "^[\\p{Alpha}]+$".r
   
   val dictionaryFilename = "../files/words.txt"
   val dictionaryFile = new File(dictionaryFilename)
@@ -52,11 +52,11 @@ object Speller extends App {
   val wordSuggestions = for {
     word <- args
    
-    normalizedWord = word.trim.toLowerCase
+    normalizedWord = word.trim.toLowerCase.replaceAll("[^\\p{Alpha}]", "")
     if WordPattern.findFirstIn(normalizedWord).isDefined && !dictionary.contains(normalizedWord)
 
     val similarWords = for {
-      ngram <- ngramsFrom(word).toSeq
+      ngram <- ngramsFrom(normalizedWord).toSeq
       similarWord <- ngram2words(ngram)
       similarityScore = stringDistance.getDistance(word, similarWord)
       if similarityScore >= minSimilarity
@@ -65,7 +65,7 @@ object Speller extends App {
     val orderedSimilarWords = similarWords
       .sortBy { case (similarWord, similarityScore) => -similarityScore }
       .map { case (similarWord, similarityScore) => similarWord }
-  } yield (word, orderedSimilarWords)
+  } yield (normalizedWord, orderedSimilarWords)
 
   val suggestionMap = wordSuggestions.toMap
 
